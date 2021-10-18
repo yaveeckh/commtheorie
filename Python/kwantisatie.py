@@ -163,13 +163,12 @@ class Kwantisatie():
         fu = np.vectorize(f_u)
         y = fu(u)
         plt.plot(u,y)
-        plt.savefig('fu.png')
         plt.hist(data, normed=True)
-        plt.savefig('hist.png')
+        plt.savefig('fu_hist.png')
         plt.show()
         
     # functie om de optimale uniforme kwantisator te bepalen
-    """ def bepaal_optimale_lineaire_kwantisator(self,M):
+    def bepaal_optimale_lineaire_kwantisator(self,M):
         # M : aantal reconstructieniveaus
         
         f_u = self.f_u # w.d.f. - anonieme functie
@@ -181,8 +180,8 @@ class Kwantisatie():
         # GKD_min : minimale GKD van de optimale uniforme kwantisator
         # SQR : SQR van de optimale kwantisator
         # entropie : entropie van het gekwantiseerde signaal
-        # r : kwantisatiedrempels
-        # q : kwantisatieniveaus
+        # r : kwantisatiedrempels ri = x0 + (2i−M)∆/2
+        # q : kwantisatieniveaus  qi = x0+(i−(M+1)/2)∆ 
         # p : relatieve frequentie kwantisatieniveus
         return (delta_opt,GKD_min,SQR,entropie,r_opt,q_opt,p_opt)
         
@@ -231,4 +230,4 @@ class Kwantisatie():
         # Implementeer vanaf hier
                                 
         # sequentie gekwantiseerd signaal
-        return samples_kwantiseerd """
+        return samples_kwantiseerd 
