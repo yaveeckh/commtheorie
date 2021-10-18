@@ -10,7 +10,7 @@ from playsound import playsound
 
 
 
-#TEST wout
+
 class Kwantisatie():
     
     # constructor - niet veranderen
@@ -163,8 +163,10 @@ class Kwantisatie():
         fu = np.vectorize(f_u)
         y = fu(u)
         plt.plot(u,y)
+        plt.savefig('fu.png')
+        plt.hist(data, normed=True)
+        plt.savefig('hist.png')
         plt.show()
-
         
     # functie om de optimale uniforme kwantisator te bepalen
     """ def bepaal_optimale_lineaire_kwantisator(self,M):
