@@ -10,7 +10,7 @@ from playsound import playsound
 
 
 
-
+#TEST
 class Kwantisatie():
     
     # constructor - niet veranderen
