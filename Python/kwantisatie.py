@@ -10,10 +10,6 @@ from playsound import playsound
 
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 49d7b4f5685846f04a654d57be422856d6e5fa40
 class Kwantisatie():
     
     # constructor - niet veranderen
