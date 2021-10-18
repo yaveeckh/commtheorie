@@ -7,9 +7,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 
+from playsound import playsound
+
 
 
 def run_kwantisatie():
+    obj = Kwantisatie(0)
+    obj.plot_distributie()
     return 1
     
 def run_broncodering():
@@ -24,8 +28,7 @@ def run_moddet():
 warnings.simplefilter('ignore') # ignore warnings of integral
 
 
-
-#run_kwantisatie()
+run_kwantisatie()
 #run_broncodering()
 #run_kanaalcodering()
 #run_moddet()

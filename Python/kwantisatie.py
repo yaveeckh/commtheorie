@@ -159,9 +159,15 @@ class Kwantisatie():
         f_u = self.f_u # w.d.f. - anonieme functie
         
         # Implementeer vanaf hier
+        u = np.linspace(-1, 1, 200)
+        fu = np.vectorize(f_u)
+        y = fu(u)
+        plt.plot(u,y)
+        plt.show()
+
         
     # functie om de optimale uniforme kwantisator te bepalen
-    def bepaal_optimale_lineaire_kwantisator(self,M):
+    """ def bepaal_optimale_lineaire_kwantisator(self,M):
         # M : aantal reconstructieniveaus
         
         f_u = self.f_u # w.d.f. - anonieme functie
@@ -223,4 +229,4 @@ class Kwantisatie():
         # Implementeer vanaf hier
                                 
         # sequentie gekwantiseerd signaal
-        return samples_kwantiseerd
+        return samples_kwantiseerd """
