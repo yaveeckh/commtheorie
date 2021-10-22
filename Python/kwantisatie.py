@@ -166,25 +166,65 @@ class Kwantisatie():
         plt.savefig('fu_hist.png')
         plt.show()
         
+    
+    def sigma_gr(self, delta, M, f_u):
+        sigma_gr = 0.0
+        for i in range(1, M+1):
+            sigma_gr += float(integrate.quad(lambda u: ((i - (M+1)/2)*delta - u)**2 *f_u(u), (i - (M+1)/2)*delta - delta/2, (i - (M+1)/2)*delta + delta/2)[0])
+        return sigma_gr
+
+    def sigma_ol(self, delta, M, f_u):
+            sigma_ol = integrate.quad(lambda u: ((1 - (M+1)/2)*delta - u)**2 *f_u(u), -np.Inf, (1 - (M+1)/2)*delta - delta/2)[0]
+            sigma_ol += integrate.quad(lambda u: ((M - (M+1)/2)*delta - u)**2 *f_u(u), (M - (M+1)/2)*delta + delta/2, np.Inf)[0]
+            return sigma_ol
+
+    def sigma(self, delta, M, f_u):
+        return self.sigma_gr(delta, M, f_u) + self.sigma_ol(delta, M, f_u)
+
     # functie om de optimale uniforme kwantisator te bepalen
+    # M : aantal reconstructieniveaus
     def bepaal_optimale_lineaire_kwantisator(self,M):
-        # M : aantal reconstructieniveaus
         
         f_u = self.f_u # w.d.f. - anonieme functie
         
         # Implementeer vanaf hier
-                
-        
+
+        # Blauwe plot
+        sigmagr = np.vectorize(self.sigma_gr)
+        delta = np.linspace(0, 1, 100)
+        y = sigmagr(delta, M, f_u)
+        plt.plot(delta,y)
+
+        # Oranje plot
+        sigmaol = np.vectorize(self.sigma_ol)
+        delta_2 = np.linspace(0, 1, 100)
+        y_2 = sigmaol(delta, M, f_u)
+        plt.plot(delta_2,y_2)
+
+        # Groene plot
+        sigma_vect = np.vectorize(self.sigma)
+        delta_3 = np.linspace(0, 1, 100)
+        y_3 = sigma_vect(delta, M, f_u)
+        plt.plot(delta_3,y_3)
+        plt.savefig('sigma.png')
+
         # delta_opt : optimale stapgrootte
+        delta_opt = delta_3[np.where(y_3 == min(y_3))][0]
         # GKD_min : minimale GKD van de optimale uniforme kwantisator
+        GKD_min = min(y_3) # of dit self.sigma(delta_opt, M, f_u)
         # SQR : SQR van de optimale kwantisator
         # entropie : entropie van het gekwantiseerde signaal
         # r : kwantisatiedrempels ri = x0 + (2i−M)∆/2
-        # q : kwantisatieniveaus  qi = x0+(i−(M+1)/2)∆ 
+        r_functie = lambda i: (2*i-M)*delta_opt/2
+        r_opt = [r_functie(i) for i in range(1, M+1)]
+        # q : kwantisatieniveaus  qi = x0+(i−(M+1)/2)∆
+        q_functie = lambda i: (i - ((M+1)/2))*delta_opt
+        q_opt = [q_functie(i) for i in range(1, M+1)] 
         # p : relatieve frequentie kwantisatieniveus
+        
         return (delta_opt,GKD_min,SQR,entropie,r_opt,q_opt,p_opt)
         
-    
+        
     # functie om Lloyd-Max kwantisator te bepalen
     def bepaal_Lloyd_Max_kwantisator(self,M):
         # M : aantal reconstructieniveaus

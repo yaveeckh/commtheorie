@@ -13,7 +13,7 @@ from playsound import playsound
 
 def run_kwantisatie():
     obj = Kwantisatie(0)
-    obj.plot_distributie()
+    print(obj.bepaal_optimale_lineaire_kwantisator(2))
     return 1
     
 def run_broncodering():
