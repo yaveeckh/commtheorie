@@ -213,15 +213,26 @@ class Kwantisatie():
         # GKD_min : minimale GKD van de optimale uniforme kwantisator
         GKD_min = min(y_3) # of dit self.sigma(delta_opt, M, f_u)
         # SQR : SQR van de optimale kwantisator
-        # entropie : entropie van het gekwantiseerde signaal
+        mean = integrate.quad(lambda u: u*f_u(u), -np.Inf, np.Inf)[0]
+        SQR = (integrate.quad(lambda u: (u**2) * f_u(u), -np.Inf, np.Inf)[0] - mean**2)/GKD_min
         # r : kwantisatiedrempels ri = x0 + (2i−M)∆/2
         r_functie = lambda i: (2*i-M)*delta_opt/2
-        r_opt = [r_functie(i) for i in range(1, M+1)]
+        r_opt = [-np.Inf]
+        for i in range(1, M+1):
+            r_opt.append(r_functie(i)) 
         # q : kwantisatieniveaus  qi = x0+(i−(M+1)/2)∆
         q_functie = lambda i: (i - ((M+1)/2))*delta_opt
         q_opt = [q_functie(i) for i in range(1, M+1)] 
         # p : relatieve frequentie kwantisatieniveus
-        
+        p_functie = lambda i: integrate.quad(lambda u: f_u(u), r_opt[i-1], r_opt[i])[0]
+        p_opt = [p_functie(i) for i in range(1, M+1)] 
+        p_opt.append(integrate.quad(lambda u: f_u(u), r_opt[len(r_opt)-1], np.Inf)[0])
+
+        # entropie : entropie van het gekwantiseerde signaal
+        entropie = 0.0
+        for i in range(M):
+            entropie += -p_opt[i]*np.log2(p_opt[i])
+
         return (delta_opt,GKD_min,SQR,entropie,r_opt,q_opt,p_opt)
         
         
