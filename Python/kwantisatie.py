@@ -4,6 +4,7 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.integrate as integrate
+from scipy.integrate._ivp.radau import P
 
 from pulse import pulse
 from playsound import playsound
@@ -162,7 +163,7 @@ class Kwantisatie():
         fu = np.vectorize(f_u)
         y = fu(u)
         plt.plot(u,y)
-        plt.hist(data, normed=True)
+        plt.hist(data, density=True)
         plt.savefig('fu_hist.png')
         plt.show()
         
@@ -244,6 +245,51 @@ class Kwantisatie():
         
         # Implementeer vanaf hier
         
+        #Eerst bepalen we de initiële q_i's
+        q = np.array([-1 + 1/M + i*2/M for i in range(0,M)])
+
+        #Eerste r waarden
+        r = np.zeros(M+1)
+        r[0] = -1
+        r[-1] = 1
+        
+        
+        
+        sigma_0 = 10000
+        sigma_1 = 1
+
+        teller = lambda i : integrate.quad(lambda u: u*f_u(u), r[i-1], r[i])[0]
+        noemer = lambda i : integrate.quad(lambda u: f_u(u), r[i-1], r[i])[0]
+        update_q_f = lambda i: teller(i)/noemer(i)
+        sigma_f = lambda i : integrate.quad(lambda u: pow(q[i-1]-u, 2) * f_u(u), r[i-1], r[i])[0]
+
+        while(True):
+            print('x')
+            for i in range(1, M):
+                r[i] = (q[i-1] + q[i])/2
+            q_new = np.array([teller(i)/noemer(i) for i in range(1, M+1)])
+            q = q_new
+            sigma_0 = sigma_1
+            sigma_1 = sum(sigma_f(i) for i in range(1, M+1))
+            if((sigma_0-sigma_1)/sigma_0 < 0.001): break
+
+        GKD_min = sigma_1
+        
+        mean = integrate.quad(lambda u: u*f_u(u), -np.Inf, np.Inf)[0]
+        SQR = (integrate.quad(lambda u: (u**2) * f_u(u), -np.Inf, np.Inf)[0] - mean**2)/GKD_min
+        print(SQR)
+            
+            
+        p_functie = lambda i: integrate.quad(lambda u: f_u(u), r[i-1], r[i])[0]
+        p = [p_functie(i) for i in range(1, M+1)] 
+        p.append(integrate.quad(lambda u: f_u(u), r[len(r)-1], np.Inf)[0])
+
+        # entropie : entropie van het gekwantiseerde signaal
+        entropie = 0.0
+        for i in range(M):
+            entropie += -p[i]*np.log2(p[i])
+
+        
                
         # GKD_min : minimale GKD van de Lloyd-Max kwantisator
         # SQR : SQR van de Lloyd-Max kwantisator
@@ -251,7 +297,7 @@ class Kwantisatie():
         # r : kwantisatiedrempels
         # q : kwantisatieniveaus
         # p : relatieve frequentie kwantisatieniveus
-        return (GKD_min,SQR,entropie,ri,qi,p)
+        return (GKD_min,SQR,entropie,r,q,p)
     
     # functie om de compansie kwantisator te bepalen
     def bepaal_compansie_kwantisator(self,M):
