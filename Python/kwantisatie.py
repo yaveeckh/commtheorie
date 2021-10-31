@@ -248,26 +248,26 @@ class Kwantisatie():
         #Eerst bepalen we de initiële q_i's
         q = np.array([-1 + 1/M + i*2/M for i in range(0,M)])
 
-        #Eerste r waarden
+        #r waarde initialiseren
         r = np.zeros(M+1)
         r[0] = -1
         r[-1] = 1
-        
-        
-        
+
+        #Initialiseren van gkd's
         sigma_0 = 10000
         sigma_1 = 1
 
+        #Functies
         teller = lambda i : integrate.quad(lambda u: u*f_u(u), r[i-1], r[i])[0]
         noemer = lambda i : integrate.quad(lambda u: f_u(u), r[i-1], r[i])[0]
         update_q_f = lambda i: teller(i)/noemer(i)
         sigma_f = lambda i : integrate.quad(lambda u: pow(q[i-1]-u, 2) * f_u(u), r[i-1], r[i])[0]
 
+        #Iteratieve stappen
         while(True):
-            print('x')
             for i in range(1, M):
                 r[i] = (q[i-1] + q[i])/2
-            q_new = np.array([teller(i)/noemer(i) for i in range(1, M+1)])
+            q_new = np.array([update_q_f(i) for i in range(1, M+1)])
             q = q_new
             sigma_0 = sigma_1
             sigma_1 = sum(sigma_f(i) for i in range(1, M+1))
@@ -275,11 +275,11 @@ class Kwantisatie():
 
         GKD_min = sigma_1
         
+        #SQR
         mean = integrate.quad(lambda u: u*f_u(u), -np.Inf, np.Inf)[0]
         SQR = (integrate.quad(lambda u: (u**2) * f_u(u), -np.Inf, np.Inf)[0] - mean**2)/GKD_min
-        print(SQR)
             
-            
+        #p
         p_functie = lambda i: integrate.quad(lambda u: f_u(u), r[i-1], r[i])[0]
         p = [p_functie(i) for i in range(1, M+1)] 
         p.append(integrate.quad(lambda u: f_u(u), r[len(r)-1], np.Inf)[0])
@@ -289,8 +289,6 @@ class Kwantisatie():
         for i in range(M):
             entropie += -p[i]*np.log2(p[i])
 
-        
-               
         # GKD_min : minimale GKD van de Lloyd-Max kwantisator
         # SQR : SQR van de Lloyd-Max kwantisator
         # entropie : entropie van het gekwantiseerde signaal
