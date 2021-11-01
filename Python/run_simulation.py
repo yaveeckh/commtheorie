@@ -11,9 +11,17 @@ from playsound import playsound
 
 
 
+
 def run_kwantisatie():
     obj = Kwantisatie(0)
-    print(obj.bepaal_optimale_lineaire_kwantisator(2))
+    
+    # Maak een figuur van de optimale SQR in dB 
+    #   in functie van α = [2,...,8], waarbij M = 2**α
+    delta = np.array([i for i in range(2,9)])
+    y = np.array([obj.bepaal_optimale_lineaire_kwantisator(2**i)[2] for i in range(2,9)])
+    plt.plot(delta,y)
+    plt.savefig('SQR.png')
+
     return 1
     
 def run_broncodering():
