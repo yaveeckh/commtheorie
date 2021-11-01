@@ -38,7 +38,9 @@ def run_kwantisatie():
     #    #plt.axvline(x = r[i])
     #obj.plot_distributie()
     
-    obj.save_and_play_music(obj.kwantiseer(r_opt_lin, q_opt_lin), "output_opt_lin.wav", 1)
+
+    # Sla de gekwantiseerde fragmenten ook op: ’uniform.wav’, ’LM.wav’ en ’compansie.wav’
+    obj.save_and_play_music(obj.kwantiseer(r_opt_lin, q_opt_lin), "uniform.wav", 1)
     
     return 1
     
