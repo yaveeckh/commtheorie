@@ -192,20 +192,20 @@ class Kwantisatie():
 
         # Blauwe plot
         sigmagr = np.vectorize(self.sigma_gr)
-        delta = np.linspace(0, 1, 100)
+        delta = np.linspace(0, 0.4, 100)
         y = sigmagr(delta, M, f_u)
         plt.plot(delta,y)
 
         # Oranje plot
         sigmaol = np.vectorize(self.sigma_ol)
-        delta_2 = np.linspace(0, 1, 100)
+        delta_2 = np.linspace(0, 0.4, 100)
         y_2 = sigmaol(delta, M, f_u)
         plt.plot(delta_2,y_2)
 
         # Groene plot
         sigma_vect = np.vectorize(self.sigma)
-        delta_3 = np.linspace(0, 1, 100)
-        y_3 = sigma_vect(delta, M, f_u)
+        delta_3 = np.linspace(0, 0.4, 200)
+        y_3 = sigma_vect(delta_3, M, f_u)
         plt.plot(delta_3,y_3)
         plt.savefig('sigma.png')
 
@@ -219,6 +219,7 @@ class Kwantisatie():
         mean = integrate.quad(lambda u: u*f_u(u), -np.Inf, np.Inf)[0]
         sigma_U = integrate.quad(lambda u: (u**2) * f_u(u), -np.Inf, np.Inf)[0] - mean**2
         SQR = 10 * np.log10(sigma_U/GKD_min)
+        #SQR = (sigma_U/GKD_min)
 
         # r : kwantisatiedrempels ri = x0 + (2i−M)∆/2
         r_functie = lambda i: (2*i-M)*delta_opt/2

@@ -19,8 +19,15 @@ def run_kwantisatie():
     #   in functie van α = [2,...,8], waarbij M = 2**α
     delta = np.array([i for i in range(2,9)])
     y = np.array([obj.bepaal_optimale_lineaire_kwantisator(2**i)[2] for i in range(2,9)])
+    winst = [0 for _ in range(0,6)] 
+    for i in range(0,6):
+        winst[i] = y[i+1] - y[i]
+    print(max(winst))
     plt.plot(delta,y)
     plt.savefig('SQR.png')
+
+    #Eerst wordt het originele geluidsfragment beperkt in grootte 
+    #   door elke monsterwaarde te kwantiseren met slechts M = 26 = 64 waarden tussen 1 en -1
 
     return 1
     
