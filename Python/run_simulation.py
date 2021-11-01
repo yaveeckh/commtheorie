@@ -17,17 +17,26 @@ def run_kwantisatie():
     
     # Maak een figuur van de optimale SQR in dB 
     #   in functie van α = [2,...,8], waarbij M = 2**α
-    delta = np.array([i for i in range(2,9)])
-    y = np.array([obj.bepaal_optimale_lineaire_kwantisator(2**i)[2] for i in range(2,9)])
-    winst = [0 for _ in range(0,6)] 
-    for i in range(0,6):
-        winst[i] = y[i+1] - y[i]
-    print(max(winst))
-    plt.plot(delta,y)
-    plt.savefig('SQR.png')
 
-    #Eerst wordt het originele geluidsfragment beperkt in grootte 
-    #   door elke monsterwaarde te kwantiseren met slechts M = 26 = 64 waarden tussen 1 en -1
+    #delta = np.array([i for i in range(2,9)])
+    #y = np.array([obj.bepaal_optimale_lineaire_kwantisator(2**i)[2] for i in range(2,9)])
+    #winst = [0 for _ in range(0,6)] 
+    #for i in range(0,6):
+    #    winst[i] = y[i+1] - y[i]
+    #print(max(winst))
+    #plt.plot(delta,y)
+    #plt.savefig('SQR.png')
+
+    # Plot nu opnieuw de distributie fU (u) waarbij 
+    #   de bekomen kwantisatiedrempels en reconstructieniveaus duidelijk zijn aangegeven.
+    
+    opt_lin_kwant = obj.bepaal_optimale_lineaire_kwantisator(2**6)
+    r = opt_lin_kwant[4]
+    q = opt_lin_kwant[5]
+    for i in range(0, 2**6):
+        plt.axvline(x = q[i])
+        #plt.axvline(x = r[i])
+    obj.plot_distributie()
 
     return 1
     
