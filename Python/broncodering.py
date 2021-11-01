@@ -5,20 +5,38 @@ import math
 
 
 class Broncodering():
-    def __init__():
+    def __init__(self):
         pass
         
     # functie die codetabel opsteld voor de Huffmancode
-    def  maak_codetabel_Huffman(rel_freq,alfabet):
+    def  maak_codetabel_Huffman(self, rel_freq,alfabet):
         # rel_freq : vector met relatieve frequenties 
         # alfabet : vector met alle mogelijke symbolen in dezelfde volgorde als rel_freq 
         
         # Implementeer vanaf hier
-            
+        
         # dictionary : dictionary met symbolen als key en codewoord als value
         # gem_len : gemiddelde codewoordlengte
         # boom : matrix met boomstructuur (zie opgave)
-        return (dictionary,gem_len,boom)
+        boom = [[0, 0] for _ in range(len(rel_freq))]
+        while rel_freq.size > 1:
+            freq_1 = np.min(rel_freq)
+            index_1 = np.where(rel_freq == freq_1)[0][0]
+            value_1 = alfabet[index_1]
+            rel_freq = np.delete(rel_freq, index_1)
+            alfabet = np.delete(alfabet, index_1)
+            freq_0 = np.min(rel_freq)
+            index_0 = np.where(rel_freq == freq_0)[0][0]
+            value_0 = alfabet[index_0]
+            rel_freq = np.delete(rel_freq, index_0)
+            alfabet = np.delete(alfabet, index_0)
+
+            boom.append([value_0, value_1])
+            rel_freq = np.append(rel_freq, freq_0 + freq_1)
+            alfabet = np.append(alfabet, tuple([value_0,value_1]))
+
+        return boom
+        #return (dictionary,gem_len,boom)
     
 
     # functie voor het encoderen met vaste-lengte code

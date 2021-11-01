@@ -45,6 +45,12 @@ def run_kwantisatie():
     return 1
     
 def run_broncodering():
+    obj = Broncodering()
+
+    # Voorbeeld opgave voor tabel
+    rel_freq = np.array([11/24, 4/24, 4/24, 2/24, 2/24, 1/24])
+    alfabet = np.array([1,2,3,4,5,6])
+    print(obj.maak_codetabel_Huffman(rel_freq, alfabet))
     return 1
 
 def run_kanaalcodering():
@@ -56,7 +62,7 @@ def run_moddet():
 warnings.simplefilter('ignore') # ignore warnings of integral
 
 
-run_kwantisatie()
-#run_broncodering()
+#run_kwantisatie()
+run_broncodering()
 #run_kanaalcodering()
 #run_moddet()
