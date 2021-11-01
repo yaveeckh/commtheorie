@@ -31,13 +31,15 @@ def run_kwantisatie():
     #   de bekomen kwantisatiedrempels en reconstructieniveaus duidelijk zijn aangegeven.
     
     opt_lin_kwant = obj.bepaal_optimale_lineaire_kwantisator(2**6)
-    r = opt_lin_kwant[4]
-    q = opt_lin_kwant[5]
-    for i in range(0, 2**6):
-        plt.axvline(x = q[i])
-        #plt.axvline(x = r[i])
-    obj.plot_distributie()
-
+    r_opt_lin = opt_lin_kwant[4]
+    q_opt_lin = opt_lin_kwant[5]
+    #for i in range(0, 2**6):
+    #    plt.axvline(x = q[i])
+    #    #plt.axvline(x = r[i])
+    #obj.plot_distributie()
+    
+    obj.save_and_play_music(obj.kwantiseer(r_opt_lin, q_opt_lin), "output_opt_lin.wav", 1)
+    
     return 1
     
 def run_broncodering():
