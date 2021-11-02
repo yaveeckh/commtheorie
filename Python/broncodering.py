@@ -1,42 +1,76 @@
 
 import numpy as np
+from numpy.core.numeric import True_
 import numpy.matlib
 import math
 
+class Node:
+    def __init__(self, prob, symbol, left=None, right=None):
+        self.prob = prob
+        self.symbol = symbol
+        # left child
+        self.left = left
+        # right child
+        self.right = right
+        # 0 or 1
+        self.code = ''
+    
+def code(node, val = ''):
+    newVal = val + str(node.code)
+
+    if(node.left):
+        code(node.left,newVal)
+    if(node.right):
+        code(node.right,newVal)
+    if(not node.left and not node.right):
+        dictionary[node.symbol] = newVal
+    
+    return dictionary
 
 class Broncodering():
     def __init__(self):
         pass
-        
+    
     # functie die codetabel opsteld voor de Huffmancode
-    def  maak_codetabel_Huffman(self, rel_freq,alfabet):
+    def  maak_codetabel_Huffman(self, rel_freq, alfabet):
         # rel_freq : vector met relatieve frequenties 
         # alfabet : vector met alle mogelijke symbolen in dezelfde volgorde als rel_freq 
         
         # Implementeer vanaf hier
-        
+        M = len(rel_freq)
         # dictionary : dictionary met symbolen als key en codewoord als value
-        # gem_len : gemiddelde codewoordlengte
+        dictionary = dict()
+        for key in alfabet:
+            dictionary[key] = ''
+
         # boom : matrix met boomstructuur (zie opgave)
         boom = [[0, 0] for _ in range(len(rel_freq))]
-        while rel_freq.size > 1:
-            freq_1 = np.min(rel_freq)
-            index_1 = np.where(rel_freq == freq_1)[0][0]
-            value_1 = alfabet[index_1]
-            rel_freq = np.delete(rel_freq, index_1)
-            alfabet = np.delete(alfabet, index_1)
-            freq_0 = np.min(rel_freq)
-            index_0 = np.where(rel_freq == freq_0)[0][0]
-            value_0 = alfabet[index_0]
-            rel_freq = np.delete(rel_freq, index_0)
-            alfabet = np.delete(alfabet, index_0)
+        while len(rel_freq) > 1:
+            freq_1 = min(rel_freq)
+            index_1 = rel_freq.index(freq_1)
+            key_1 = alfabet[index_1]
+            del rel_freq[index_1]
+            del alfabet[index_1]
+            
+            freq_0 = min(rel_freq)
+            index_0 = rel_freq.index(freq_0)
+            key_0 = alfabet[index_0]
+            del rel_freq[index_0]
+            del alfabet[index_0]
 
-            boom.append([value_0, value_1])
-            rel_freq = np.append(rel_freq, freq_0 + freq_1)
-            alfabet = np.append(alfabet, tuple([value_0,value_1]))
+            boom.append([key_0, key_1])
+            rel_freq.append(freq_0 + freq_1)
+            alfabet.append([key_0, key_1])
+        
+        dictionary = self.recursive_code(alfabet[0], dictionary)
 
-        return boom
-        #return (dictionary,gem_len,boom)
+        # gem_len : gemiddelde codewoordlengte
+        gem_len = 0
+        for value in dictionary.values():
+            gem_len += len(value)
+        gem_len /= M
+
+        return (dictionary,gem_len,boom)
     
 
     # functie voor het encoderen met vaste-lengte code
