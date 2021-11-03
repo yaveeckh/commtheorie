@@ -1,9 +1,11 @@
 
 import numpy as np
+from numpy.core.fromnumeric import sort
 from numpy.core.numeric import True_
 import numpy.matlib
 import math
 
+# Node in the Huffman tree
 class Node:
     def __init__(self, prob, symbol, left=None, right=None):
         self.prob = prob
@@ -14,14 +16,15 @@ class Node:
         self.right = right
         # 0 or 1
         self.code = ''
-    
-def code(node, val = ''):
+
+# Helper function to make codes for the nodes
+def code(node, dictionary, val = ''):
     newVal = val + str(node.code)
 
     if(node.left):
-        code(node.left,newVal)
+        dictionary.update(code(node.left,dictionary, newVal))
     if(node.right):
-        code(node.right,newVal)
+        dictionary.update(code(node.right,dictionary, newVal))
     if(not node.left and not node.right):
         dictionary[node.symbol] = newVal
     
@@ -40,30 +43,30 @@ class Broncodering():
         M = len(rel_freq)
         # dictionary : dictionary met symbolen als key en codewoord als value
         dictionary = dict()
-        for key in alfabet:
-            dictionary[key] = ''
-
         # boom : matrix met boomstructuur (zie opgave)
+        nodes = []
+        for i, symbol in enumerate(alfabet):
+            nodes.append(Node(rel_freq[i], symbol))
+
         boom = [[0, 0] for _ in range(len(rel_freq))]
-        while len(rel_freq) > 1:
-            freq_1 = min(rel_freq)
-            index_1 = rel_freq.index(freq_1)
-            key_1 = alfabet[index_1]
-            del rel_freq[index_1]
-            del alfabet[index_1]
-            
-            freq_0 = min(rel_freq)
-            index_0 = rel_freq.index(freq_0)
-            key_0 = alfabet[index_0]
-            del rel_freq[index_0]
-            del alfabet[index_0]
+        while len(nodes) > 1:
+            nodes = sorted(nodes, key=lambda x: x.prob)
 
-            boom.append([key_0, key_1])
-            rel_freq.append(freq_0 + freq_1)
-            alfabet.append([key_0, key_1])
+            right = nodes[0]
+            left = nodes[1]
+
+            left.code = 1
+            right.code = 0
+
+            newNode = Node(left.prob + right.prob, left.symbol + right.symbol, left, right)
+
+            boom.append([left.symbol, right.symbol])
+
+            nodes.remove(left)
+            nodes.remove(right)
+            nodes.append(newNode)
         
-        dictionary = self.recursive_code(alfabet[0], dictionary)
-
+        dictionary = code(nodes[0], dictionary)
         # gem_len : gemiddelde codewoordlengte
         gem_len = 0
         for value in dictionary.values():
