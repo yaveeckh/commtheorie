@@ -127,7 +127,7 @@ class Kwantisatie():
         return f
     
     # functie om inverse van een functie numeriek te bepalen - niet veranderen
-    def inverse(g,Yvec):
+    def inverse(self, g, Yvec):
         Uvec = np.zeros(len(Yvec))
         eps = 1e-6
         for i in range(len(Yvec)):
@@ -154,7 +154,7 @@ class Kwantisatie():
         return Uvec
     
     # functie om distributie en genormaliseerd histogram te plotten
-    def plot_distributie(self):
+    def plot_distributie(self, filename):
         data = self.data # originele monsterwaarden
         f_u = self.f_u # w.d.f. - anonieme functie
         
@@ -164,8 +164,8 @@ class Kwantisatie():
         y = fu(u)
         plt.plot(u,y)
         plt.hist(data, density=True)
-        plt.savefig('fu.png')
-        plt.show()
+        plt.savefig(filename, dpi=300)
+        plt.close()
         
     
     def sigma_gr(self, delta, M, f_u):
@@ -184,30 +184,34 @@ class Kwantisatie():
 
     # functie om de optimale uniforme kwantisator te bepalen
     # M : aantal reconstructieniveaus
-    def bepaal_optimale_lineaire_kwantisator(self,M):
+    def bepaal_optimale_lineaire_kwantisator(self,M, plot = 0):
         
         f_u = self.f_u # w.d.f. - anonieme functie
         
         # Implementeer vanaf hier
-
+        
         # Blauwe plot
         sigmagr = np.vectorize(self.sigma_gr)
         delta = np.linspace(0, 0.4, 100)
         y = sigmagr(delta, M, f_u)
-        plt.plot(delta,y)
 
         # Oranje plot
         sigmaol = np.vectorize(self.sigma_ol)
         delta_2 = np.linspace(0, 0.4, 100)
         y_2 = sigmaol(delta, M, f_u)
-        plt.plot(delta_2,y_2)
 
         # Groene plot
         sigma_vect = np.vectorize(self.sigma)
         delta_3 = np.linspace(0, 0.4, 200)
         y_3 = sigma_vect(delta_3, M, f_u)
-        plt.plot(delta_3,y_3)
-        plt.savefig('sigma.png')
+
+
+        if plot:
+            plt.plot(delta,y)
+            plt.plot(delta_2,y_2)
+            plt.plot(delta_3,y_3)
+            plt.savefig('sigma.png')
+            plt.close()
 
         # delta_opt : optimale stapgrootte
         delta_opt = delta_3[np.where(y_3 == min(y_3))][0]
@@ -311,14 +315,42 @@ class Kwantisatie():
         f_u = self.f_u # w.d.f. - anonieme functie
         
         # Implementeer vanaf hier
-        
-                
-        # GKD : GKD van de compansie kwantisator
-        # SQR : SQR van de compansie kwantisator
-        # entropie : entropie van het gekwantiseerde signaal
+        g_u = lambda u : integrate.quad(lambda x: f_u(x), -np.Inf, u)[0] - 0.5
+        g_u_vec = np.vectorize(g_u)
+        Uvec = np.linspace(-1, 1, 100)         
+        Yvals = g_u_vec(Uvec)
+        plt.plot(Uvec, Yvals)   
+        plt.savefig('gu.png')
+        plt.close()
+
+        delta = 1/M
+        r_uni = [i/M for i in range(-math.ceil(M/2), math.ceil(M/2)+1)]    
+        q_uni = [i/(2*M) for i in range(-M + 1, M, 2)] 
+
         # r : kwantisatiedrempels
+        r = self.inverse(g_u, r_uni).tolist()
+
         # q : kwantisatieniveaus
+        q = self.inverse(g_u, q_uni).tolist()
+
+        # GKD : GKD van de compansie kwantisator
+        GKD = self.sigma(delta, M, f_u)
+        
+        # SQR : SQR van de compansie kwantisator
+        mean = integrate.quad(lambda u: u*f_u(u), -np.Inf, np.Inf)[0]
+        sigma_U = integrate.quad(lambda u: (u**2) * f_u(u), -np.Inf, np.Inf)[0] - mean**2
+        #SQR = (sigma_U/GKD_min)
+        SQR = 10 * np.log10(sigma_U/GKD)
+
         # p : relatieve frequentie kwantisatieniveus
+        p_functie = lambda i: integrate.quad(lambda u: f_u(u), r[i-1], r[i])[0]
+        p = [p_functie(i) for i in range(1, M+1)] 
+
+        # entropie : entropie van het gekwantiseerde signaal
+        entropie = 0.0
+        for i in range(M):
+            entropie += -p[i]*np.log2(p[i])
+
         return (GKD,SQR,entropie,r,q,p)
                    
     # functie die de kwantisatie uitvoert
