@@ -86,14 +86,14 @@ class Broncodering():
         return data_geencodeerd
        
     # functie voor het decoderen met vaste-lengte code
-    def vaste_lengte_decodeer(self, data,alfabet):
+    #def vaste_lengte_decodeer(self, data,alfabet):
         # data :  te decoderen data
         # alfabet : vector met alle mogelijke symbolen
         
         # Implementeer vanaf hier
                
         # data_gedecodeerd : gedecodeerde data
-        return data_gedecodeerd
+        #return data_gedecodeerd
         
     # functie die sequentie van bronsymbolen omzet naar macrosymbolen en de relatieve frequenties ervan berekent
     def scalair_naar_vector(self, bronsymbolen, alfabet_scalair):
@@ -132,9 +132,10 @@ class Broncodering():
         # alfabet_vector : vector met alle mogelijke macrosymbolen
         
         # Implementeer vanaf hier
-        while len(macrosymbolen) >1:
-
-
+        bronsymbolen = []
+        for macro in macrosymbolen:
+            bronsymbolen.append(alfabet_vector[int(macro)])
+            
         # bronsymbolen : vector met macrosymbolen omgezet in bronsymbolen
         return bronsymbolen
     

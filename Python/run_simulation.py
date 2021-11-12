@@ -100,7 +100,10 @@ def run_broncodering():
     
     # Bron -> Macro
     alfabet = ['1','2','3','4','5','6']
-    bronsymbolen = ['1','1','2','1','3','2','5','1','6','6','5','6','4','4','2','3','2','2','2','4','6','3','2','3','5']
+    stream = '13131314151621222324252631323334353641424344454651525354555661626364656612323456214314345621635412653443524536124651426511122314314141515116166654546656545363264623441264612554353453451243564361435424123425423515632456154323242562453556346235125432415'
+    bronsymbolen = []
+    for symbol in stream:
+        bronsymbolen.append(symbol)
     sc_to_vect = obj.scalair_naar_vector(bronsymbolen, alfabet)
     print(sc_to_vect)
     entropie = 0.0
@@ -116,6 +119,8 @@ def run_broncodering():
     print('codetabel = ',codetabel)
 
     # Macro -> Bron
+    bronsymbolen_nadien = obj.vector_naar_scalair(sc_to_vect[0], sc_to_vect[1])
+    print('bronsymbolen = ', bronsymbolen_nadien)
     
     
 
