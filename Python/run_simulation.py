@@ -97,13 +97,26 @@ def run_broncodering():
     return 1
     """
 
-    """"
-    # TEST scalair_naar_vector
+    
+    # Bron -> Macro
     alfabet = ['1','2','3','4','5','6']
-    bronsymbolen = '11111111113535353535'
-    print(obj.scalair_naar_vector(bronsymbolen, alfabet))
-    """
+    bronsymbolen = ['1','1','2','1','3','2','5','1','6','6','5','6','4','4','2','3','2','2','2','4','6','3','2','3','5']
+    sc_to_vect = obj.scalair_naar_vector(bronsymbolen, alfabet)
+    print(sc_to_vect)
+    entropie = 0.0
+    for kans in sc_to_vect[2]:
+        if kans != 0.0:
+            entropie -= kans*np.log2(kans)
+    print('entropie = ', entropie)
+    
+    # Codetabel
+    dictionary, gem_len, codetabel = obj.maak_codetabel_Huffman(sc_to_vect[2], sc_to_vect[1])
+    print('dictionary = ', dictionary)
+    print('gem_len = ', gem_len)
+    print('codetabel = ',codetabel)
 
+    # Macro -> Bron
+    
     
 
 def run_kanaalcodering():

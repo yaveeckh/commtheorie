@@ -74,10 +74,9 @@ class Broncodering():
         gem_len /= M
 
         return (dictionary,gem_len,boom)
-    
 
     # functie voor het encoderen met vaste-lengte code
-    def vaste_lengte_encodeer(data,alfabet):
+    def vaste_lengte_encodeer(self, data,alfabet):
         # data : de data die geëncodeerd moet worden
         # alfabet : vector met alle mogelijke symbolen
         
@@ -87,7 +86,7 @@ class Broncodering():
         return data_geencodeerd
        
     # functie voor het decoderen met vaste-lengte code
-    def vaste_lengte_decodeer(data,alfabet):
+    def vaste_lengte_decodeer(self, data,alfabet):
         # data :  te decoderen data
         # alfabet : vector met alle mogelijke symbolen
         
@@ -108,16 +107,16 @@ class Broncodering():
             for second in alfabet_scalair:
                 alfabet_vector.append(first + second)
 
-        macrosymbolen = ''
+        macrosymbolen = []
         rel_freq = [0 for _ in range(len(alfabet_vector))]
         aantal_macrosymbolen = 0
         while len(bronsymbolen) > 1:
             aantal_macrosymbolen += 1
             index = alfabet_vector.index(bronsymbolen[0] + bronsymbolen[1])
-            macrosymbolen += str(index)
+            macrosymbolen.append(str(index))
             rel_freq[index] += 1
-            bronsymbolen = bronsymbolen[2::]
-        
+            del bronsymbolen[0]
+            del bronsymbolen[0]
         
         for index, element in enumerate(rel_freq):
             rel_freq[index] = element / aantal_macrosymbolen
@@ -128,17 +127,19 @@ class Broncodering():
         return (macrosymbolen,alfabet_vector, rel_freq)
      
     # functie die sequentie van macrosymbolen omzet naar sequentie van bronsymbolen
-    def vector_naar_scalair(macrosymbolen,alfabet_scalair):
+    def vector_naar_scalair(self, macrosymbolen,alfabet_vector):
         # macrosymbolen : vector met macrosymbolen die omgezet moet worden naar bronsymbolen
-        # alfabet_scalair : vector met alle mogelijke bronsymbolen
+        # alfabet_vector : vector met alle mogelijke macrosymbolen
         
         # Implementeer vanaf hier
-        
+        while len(macrosymbolen) >1:
+
+
         # bronsymbolen : vector met macrosymbolen omgezet in bronsymbolen
         return bronsymbolen
     
     # functie die de data sequentie encodeert met Huffman code - niet veranderen
-    def Huffman_encodeer(data,dictionary):
+    def Huffman_encodeer(self, data,dictionary):
         # data : de data die geëncodeerd moet worden
         # dictionary : dictionary met symbolen als key en codewoord als value
         
@@ -164,7 +165,7 @@ class Broncodering():
         return output
    
     # functie die de data sequentie decodeert met Huffman code - niet veranderen
-    def Huffman_decodeer(data,boom,alfabet):
+    def Huffman_decodeer(self, data,boom,alfabet):
         # data : de data die gedecodeerd moet worden
         # boom : matrix met boomstructuur (zie opgave)
         # alfabet : vector met alle mogelijke symbolen
@@ -184,7 +185,3 @@ class Broncodering():
                 output.append(indx_tree-1)
                 indx_tree = indx_reset
         return alfabet[output]
-    
-        
-        
-        
