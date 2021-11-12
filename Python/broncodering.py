@@ -48,7 +48,7 @@ class Broncodering():
         for i, symbol in enumerate(alfabet):
             nodes.append(Node(rel_freq[i], symbol))
 
-        boom = [[0, 0] for _ in range(len(rel_freq))]
+        boom = [[0, 0] for _ in range(M)]
         while len(nodes) > 1:
             nodes = sorted(nodes, key=lambda x: x.prob)
 
@@ -97,17 +97,35 @@ class Broncodering():
         return data_gedecodeerd
         
     # functie die sequentie van bronsymbolen omzet naar macrosymbolen en de relatieve frequenties ervan berekent
-    def scalair_naar_vector(bronsymbolen,alfabet_scalair):
+    def scalair_naar_vector(self, bronsymbolen, alfabet_scalair):
         # bronsymbolen : vector met bronsymbolen die omgezet moet worden naar macrosymbolen
-        # alfabet_scalair : vector met alle mogelijke bronsymbolen
-        
+        # alfabet_scalair : vector met alle mogelijke bronsymbolen ['1', '2', '3']
+
         # Implementeer vanaf hier
-       
-               
-        # macrosymbolen : vector met bronsymbolen omgezet in macrosymbolen
+        M = len(alfabet_scalair)
+        alfabet_vector = []
+        for first in alfabet_scalair:
+            for second in alfabet_scalair:
+                alfabet_vector.append(first + second)
+
+        macrosymbolen = ''
+        rel_freq = [0 for _ in range(len(alfabet_vector))]
+        aantal_macrosymbolen = 0
+        while len(bronsymbolen) > 1:
+            aantal_macrosymbolen += 1
+            index = alfabet_vector.index(bronsymbolen[0] + bronsymbolen[1])
+            macrosymbolen += str(index)
+            rel_freq[index] += 1
+            bronsymbolen = bronsymbolen[2::]
+        
+        
+        for index, element in enumerate(rel_freq):
+            rel_freq[index] = element / aantal_macrosymbolen
+
+        # macrosymbolen : vector met bronsymbolen omgezet in macrosymbolen ['11', '12', '13',..., '33']
         # alfabet_vector : vector met alle mogelijke macrosymbolen
         # rel_freq : vector met relative frequentie van alle macrosymbolen
-        return (macrosymbolen,alfabet_vector,rel_freq)
+        return (macrosymbolen,alfabet_vector, rel_freq)
      
     # functie die sequentie van macrosymbolen omzet naar sequentie van bronsymbolen
     def vector_naar_scalair(macrosymbolen,alfabet_scalair):
