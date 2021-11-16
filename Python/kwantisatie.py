@@ -227,8 +227,8 @@ class Kwantisatie():
 
         # r : kwantisatiedrempels ri = x0 + (2i−M)∆/2
         r_functie = lambda i: (2*i-M)*delta_opt/2
-        r_opt = [-np.Inf]
-        for i in range(1, M+1):
+        r_opt = []
+        for i in range(0, M+1):
             r_opt.append(r_functie(i))
 
         # q : kwantisatieniveaus  qi = x0+(i−(M+1)/2)∆
@@ -237,8 +237,7 @@ class Kwantisatie():
 
         # p : relatieve frequentie kwantisatieniveus
         p_functie = lambda i: integrate.quad(lambda u: f_u(u), r_opt[i-1], r_opt[i])[0]
-        p_opt = [p_functie(i) for i in range(1, M+1)] 
-        p_opt.append(integrate.quad(lambda u: f_u(u), r_opt[len(r_opt)-1], np.Inf)[0])
+        p_opt = [p_functie(i) for i in range(1, M+1)]
 
         # entropie : entropie van het gekwantiseerde signaal
         entropie = 0.0

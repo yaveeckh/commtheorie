@@ -1,4 +1,3 @@
-
 import numpy as np
 from numpy.core.fromnumeric import sort
 from numpy.core.numeric import True_
@@ -77,23 +76,29 @@ class Broncodering():
 
     # functie voor het encoderen met vaste-lengte code
     def vaste_lengte_encodeer(self, data,alfabet):
-        # data : de data die geëncodeerd moet worden
+        # data : de data die geëncodeerd moet worden (lijst?)
         # alfabet : vector met alle mogelijke symbolen
-        
+
         # Implementeer vanaf hier
-               
+        lengte = math.ceil(np.log2(len(alfabet)))
+        data_geencodeerd = []
+        for datapoint in data:
+            data_geencodeerd.append(bin(alfabet.index(datapoint))[2:].zfill(lengte))
         # data_gecodeerd : de geëncodeerde data
         return data_geencodeerd
        
     # functie voor het decoderen met vaste-lengte code
-    #def vaste_lengte_decodeer(self, data,alfabet):
-        # data :  te decoderen data
+    def vaste_lengte_decodeer(self, data,alfabet):
+        # data :  te decoderen data (lijst?)
         # alfabet : vector met alle mogelijke symbolen
         
         # Implementeer vanaf hier
-               
+        data_gedecodeerd = []
+        for datapoint in data:
+            data_gedecodeerd.append(alfabet[int(str(datapoint), 2)])
+        
         # data_gedecodeerd : gedecodeerde data
-        #return data_gedecodeerd
+        return data_gedecodeerd
         
     # functie die sequentie van bronsymbolen omzet naar macrosymbolen en de relatieve frequenties ervan berekent
     def scalair_naar_vector(self, bronsymbolen, alfabet_scalair):
@@ -105,14 +110,14 @@ class Broncodering():
         alfabet_vector = []
         for first in alfabet_scalair:
             for second in alfabet_scalair:
-                alfabet_vector.append(first + second)
+                alfabet_vector.append(str(first) + str(second))
 
         macrosymbolen = []
         rel_freq = [0 for _ in range(len(alfabet_vector))]
         aantal_macrosymbolen = 0
         while len(bronsymbolen) > 1:
             aantal_macrosymbolen += 1
-            index = alfabet_vector.index(bronsymbolen[0] + bronsymbolen[1])
+            index = alfabet_vector.index(str(bronsymbolen[0]) + str(bronsymbolen[1]))
             macrosymbolen.append(str(index))
             rel_freq[index] += 1
             del bronsymbolen[0]
@@ -127,15 +132,15 @@ class Broncodering():
         return (macrosymbolen,alfabet_vector, rel_freq)
      
     # functie die sequentie van macrosymbolen omzet naar sequentie van bronsymbolen
-    def vector_naar_scalair(self, macrosymbolen,alfabet_vector):
+    def vector_naar_scalair(self, macrosymbolen,alfabet_scalair):
         # macrosymbolen : vector met macrosymbolen die omgezet moet worden naar bronsymbolen
-        # alfabet_vector : vector met alle mogelijke macrosymbolen
+        # alfabet_scalair : vector met alle mogelijke bronsymbolen ['1', '2', '3']
         
         # Implementeer vanaf hier
         bronsymbolen = []
         for macro in macrosymbolen:
-            bronsymbolen.append(alfabet_vector[int(macro)])
-            
+            bronsymbolen.append(alfabet_scalair[int(macro)//len(alfabet_scalair)])
+            bronsymbolen.append(alfabet_scalair[int(macro)%len(alfabet_scalair)])
         # bronsymbolen : vector met macrosymbolen omgezet in bronsymbolen
         return bronsymbolen
     
