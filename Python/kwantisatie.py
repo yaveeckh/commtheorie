@@ -361,12 +361,11 @@ class Kwantisatie():
         # Implementeer vanaf hier
         
         # sequentie gekwantiseerd signaal
-        samples_kwantiseerd_0 = [0 for _ in range(len(data))]
+        samples_kwantiseerd = [0 for _ in range(len(data))]
 
         for index, data_point in enumerate(data):
             for i in range(len(r) - 1):
-                if data_point > r[i] and data_point < r[i+1]:
-                    samples_kwantiseerd_0[index] = q[i]
+                if data_point > r[i] and data_point <= r[i+1]:
+                    samples_kwantiseerd[index] = q[i]
                     break
-        samples_kwantiseerd = np.array(samples_kwantiseerd_0)
         return samples_kwantiseerd

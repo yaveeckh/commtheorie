@@ -25,7 +25,7 @@ def code(node, dictionary, val = ''):
     if(node.right):
         dictionary.update(code(node.right,dictionary, newVal))
     if(not node.left and not node.right):
-        dictionary[node.symbol] = newVal
+        dictionary[str(node.symbol)] = newVal
     
     return dictionary
 
@@ -39,7 +39,7 @@ class Broncodering():
         # alfabet : vector met alle mogelijke symbolen in dezelfde volgorde als rel_freq 
         
         # Implementeer vanaf hier
-        M = len(rel_freq)
+        M = len(alfabet)
         # dictionary : dictionary met symbolen als key en codewoord als value
         dictionary = dict()
         # boom : matrix met boomstructuur (zie opgave)
@@ -48,16 +48,18 @@ class Broncodering():
             nodes.append(Node(rel_freq[i], symbol))
 
         boom = [[0, 0] for _ in range(M)]
+        counter = M
         while len(nodes) > 1:
             nodes = sorted(nodes, key=lambda x: x.prob)
 
             right = nodes[0]
             left = nodes[1]
 
-            left.code = 1
-            right.code = 0
+            left.code = 0
+            right.code = 1
 
-            newNode = Node(left.prob + right.prob, left.symbol + right.symbol, left, right)
+            counter += 1
+            newNode = Node(left.prob + right.prob, counter, left, right)
 
             boom.append([left.symbol, right.symbol])
 
@@ -106,6 +108,7 @@ class Broncodering():
         # alfabet_scalair : vector met alle mogelijke bronsymbolen ['1', '2', '3']
 
         # Implementeer vanaf hier
+
         M = len(alfabet_scalair)
         alfabet_vector = []
         for first in alfabet_scalair:
@@ -118,7 +121,7 @@ class Broncodering():
         while len(bronsymbolen) > 1:
             aantal_macrosymbolen += 1
             index = alfabet_vector.index(str(bronsymbolen[0]) + str(bronsymbolen[1]))
-            macrosymbolen.append(str(index))
+            macrosymbolen.append(str(index+1))
             rel_freq[index] += 1
             del bronsymbolen[0]
             del bronsymbolen[0]
@@ -139,8 +142,8 @@ class Broncodering():
         # Implementeer vanaf hier
         bronsymbolen = []
         for macro in macrosymbolen:
-            bronsymbolen.append(alfabet_scalair[int(macro)//len(alfabet_scalair)])
-            bronsymbolen.append(alfabet_scalair[int(macro)%len(alfabet_scalair)])
+            bronsymbolen.append(alfabet_scalair[(int(macro) - 1)//len(alfabet_scalair)])
+            bronsymbolen.append(alfabet_scalair[(int(macro) - 1)%len(alfabet_scalair)])
         # bronsymbolen : vector met macrosymbolen omgezet in bronsymbolen
         return bronsymbolen
     
@@ -153,7 +156,6 @@ class Broncodering():
                
         alfabet = dictionary.keys()
         N_symbols = len(alfabet)
-        
         output_temp = np.zeros(N,dtype=object)
                 
         row_index = np.arange(N)
@@ -183,10 +185,9 @@ class Broncodering():
         idx = 0
         indx_reset = boom.shape[0]
         indx_tree = indx_reset
-                
         for idx in range(N):
             next_index = data[idx]
-            indx_tree = boom[indx_tree-1,next_index]
+            indx_tree = boom[indx_tree-1, next_index]
             if(indx_tree<=M):
                 output.append(indx_tree-1)
                 indx_tree = indx_reset
