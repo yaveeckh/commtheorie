@@ -33,10 +33,19 @@ class ModDet():
                     if bits == '10': a.append(complex(0,-1))
 
             elif constellatie == '4QAM':
-                pass
-
+                for bits in bitvector:
+                    if bits == '00': a.append(complex(math.sqrt(2)/2,math.sqrt(2)/2))
+                    if bits == '01': a.append(complex(-math.sqrt(2)/2,math.sqrt(2)/2))
+                    if bits == '11': a.append(complex(-math.sqrt(2)/2,-math.sqrt(2)/2))
+                    if bits == '10': a.append(complex(math.sqrt(2)/2,-math.sqrt(2)/2))
             
-       
+            elif constellatie == '4PAM':
+                for bits in bitvector:
+                    if bits == '00': a.append(-3*math.sqrt(5)/5)
+                    if bits == '01': a.append(-math.sqrt(5)/5)
+                    if bits == '11': a.append(math.sqrt(5)/5)
+                    if bits == '10': a.append(3*math.sqrt(5)/5)
+
         # a: sequentie van data symbolen
         return a
     
