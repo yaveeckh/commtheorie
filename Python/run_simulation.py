@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 import copy
+import random
 
 from playsound import playsound
 
@@ -204,12 +205,23 @@ def run_kanaalcodering():
     return 1
 
 def run_moddet():
+    obj = ModDet
+    bitstring = bin(random.randint(0,255))[2:].zfill(8)
+    bitvector = []
+    for bit in bitstring:
+        bitvector.append(int(bit))
+    
+    print(bitvector)
+    print(obj.mapper(bitvector,'BPSK'))
+    print(obj.mapper(bitvector,'4QAM'))
+    print(obj.mapper(bitvector,'4PAM'))
+    print(obj.mapper(bitvector,'4PSK'))
     return 1
 
 warnings.simplefilter('ignore') # ignore warnings of integral
 
 
 #run_kwantisatie()
-run_broncodering()
+#run_broncodering()
 #run_kanaalcodering()
-#run_moddet()
+run_moddet()
