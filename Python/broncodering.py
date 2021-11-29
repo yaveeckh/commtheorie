@@ -49,9 +49,9 @@ class Broncodering():
 
         boom = [[0, 0] for _ in range(M)]
         counter = M
+        nodes = sorted(nodes, key=lambda x: x.prob)
         while len(nodes) > 1:
-            nodes = sorted(nodes, key=lambda x: x.prob)
-
+            
             right = nodes[0]
             left = nodes[1]
 
