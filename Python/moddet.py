@@ -14,6 +14,24 @@ class ModDet():
         # constellatie: ofwel 'BPSK',ofwel '4QAM',ofwel '4PSK',ofwel'4PAM'
                 
         # Implementeer vanaf hier
+        a = []
+
+        if constellatie == 'BPSK':
+            for bit in bitstring:
+                a.append(-1 if bit == 0 else 1)
+
+        else:
+            bitvector = []
+            for i in range(0, len(bitstring), 2):
+                bitvector.append("".join(str(bit) for bit in bitstring[i:i+2]))
+            
+            if constellatie == '4PSK':
+                for bits in bitvector:
+                    if bits == '00': a.append(1)
+                    if bits == '01': a.append(complex(0,1))
+                    if bits == '11': a.append(-1)
+                    if bits == '10': a.append(complex(0,-1))
+            
        
         # a: sequentie van data symbolen
         return a
