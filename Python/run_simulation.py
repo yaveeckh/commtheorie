@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 import copy
+import time
 
 from playsound import playsound
 
@@ -98,29 +99,33 @@ def run_broncodering():
     for symbol in stream:
         bronsymbolen.append(symbol)
     macrosymbolen, alfabet_vector, rel_freq = obj.scalair_naar_vector(bronsymbolen, alfabet)
-    print(macrosymbolen)
+    print('macrosymbolen = ', macrosymbolen)
     entropie = 0.0
     for kans in rel_freq:
         if kans != 0.0:
             entropie -= kans*np.log2(kans)
-    print('entropie = ', entropie)
+    #print('entropie = ', entropie)
     
     # Codetabel
     # ['0', '1', '2',...] -> [11001, 1111, 000]
     index_lijst = [i + 1 for i in range(len(alfabet_vector))]
     dictionary, gem_len, codetabel = obj.maak_codetabel_Huffman(rel_freq, index_lijst)
     print('dictionary = ', dictionary)
-    print('gem_len = ', gem_len)
+    #print('gem_len = ', gem_len)
     print('codetabel = ',codetabel)
 
     # Macro -> binair : KLOPT
-    data_binair = [obj.Huffman_encodeer(macrosymbolen[i], dictionary) for i in range(len(macrosymbolen))]
-    data_binair = [x[0] for x in data_binair]
+    #data_binair = [obj.Huffman_encodeer(macrosymbolen[i], dictionary) for i in range(len(macrosymbolen))]
+    #data_binair = [x[0] for x in data_binair]
+    data_binair = obj.Huffman_encodeer(np.array(macrosymbolen), dictionary)
     print('data_binair = ', data_binair)
-
+    data_binair_str = ''
+    for datapoint in data_binair:
+        data_binair_str += datapoint
     # Binair -> macro : KLOPT NIET
-    data_decoded = [obj.Huffman_decodeer([int(char) for char in data_binair[i]], np.array(codetabel), np.array(index_lijst)) for i in range(len(data_binair))]
+    #data_decoded = [obj.Huffman_decodeer([int(char) for char in data_binair[i]], np.array(codetabel), np.array(index_lijst)) for i in range(len(data_binair))]
     #data_decoded = [x[0] for x in data_decoded if x != []]
+    data_decoded = obj.Huffman_decodeer(data_binair_str, np.array(codetabel), np.array(index_lijst))
     print('data_decoded = ', data_decoded, '\n')
 
 
@@ -137,65 +142,79 @@ def run_broncodering():
     """
 
     #############################################################################################
-
     
+    start = time.time()
     # op kwantisatie - compansie
     r_compansie, q_compansie, bronsymbolen = run_kwantisatie()
     #print('bronsymbolen = ', bronsymbolen)
     print('q_compansie = ', q_compansie, '\n')
     bronsymbolen_vast = copy.deepcopy(bronsymbolen)
     
+
+
     print('BRONCODERING')
-    print('-----------------------')
-    # Bron -> Macro
-    # ['1', '1', '1', '2', '1', '3',...] -> ['11', '12', '13',...] -> ['0', '1', '2',...]
+    print('----------------------- \n')
+    print('Bron -> Macro')
     alfabet_scalair = q_compansie
     macrosymbolen, alfabet_vector, rel_freq = obj.scalair_naar_vector(bronsymbolen, alfabet_scalair)
     entropie = 0.0
     for kans in rel_freq:
         if kans != 0.0:
             entropie -= kans*np.log2(kans)
-    print('entropie = ', entropie)
     #print('macrosymbolen = ', macrosymbolen, '\n')
+    print('entropie = ', entropie)
+    stop = time.time()
+    print('Time: kwantisatie = ', stop - start, '\n')
     
 
-    # Codetabel
-    # dicitonary ('0' : 11001, '1' : 1111, '2' : 000,...])
-    print('check_0')
+
+    print('Codetabel + dictionary')
+    start_1 = time.time()
     index_lijst = [i + 1 for i in range(len(alfabet_vector))]
     dictionary, gem_len, codetabel = obj.maak_codetabel_Huffman(rel_freq, index_lijst)
     #print('dictionary = ', dictionary, '\n')
     print('gem_len = ', gem_len)
     #print('codetabel = ',codetabel, '\n')
+    stop_1 = time.time()
+    print('Time: maak_codetabel_Huffman = ', stop_1 - start_1, '\n')
 
 
-    # Macro -> binair
-    print('check_1')
-    data_binair = [obj.Huffman_encodeer(macrosymbolen[i], dictionary) for i in range(len(macrosymbolen))]
-    data_binair = [x[0] for x in data_binair]
+    print('Macro -> binair')
+    start_2 = time.time()
+    data_binair = obj.Huffman_encodeer(np.array(macrosymbolen), dictionary)
+    data_binair_str = ''
+    for datapoint in data_binair:
+        data_binair_str += datapoint
     #print('data_binair = ', data_binair, '\n')
-
-
-
-    # Binair -> macro
-    print('check_2')
-    data_macro = [obj.Huffman_decodeer([int(char) for char in data_binair[i]], np.array(codetabel), np.array(index_lijst)) for i in range(len(data_binair))]
-    #print('data_macro = ', data_macro, '\n')
-
-
-    # Macro -> Bron
-    # ['0', '1', '2',...] -> ['1', '1', '1', '2', '1', '3',...]
-    print('check_3')
-    data_bron = obj.vector_naar_scalair(data_macro, alfabet_scalair)
-    #print('data_bron = ', data_bron, '\n')
+    stop_2 = time.time()
+    print('Time: Huffman_encodeer = ', stop_2 - start_2, '\n')
     
 
-    # Vaste-lengte
-    print('check_4')
+    print('Binair -> macro')
+    start_3 = time.time()
+    data_macro = obj.Huffman_decodeer(data_binair_str, np.array(codetabel), np.array(index_lijst))
+    #print('data_macro = ', data_macro, '\n')
+    stop_3 = time.time()
+    print('Time: Huffman_decodeer = ', stop_3 - start_3, '\n')
+
+    """
+    print('Macro -> Bron')
+    start_4 = time.time()
+    data_bron = obj.vector_naar_scalair(data_macro, alfabet_scalair)
+    #print('data_bron = ', data_bron, '\n')
+    stop_4 = time.time()
+    print('Time: vector_naar_scalair = ', stop_4 - start_4, '\n')
+    
+
+    print('Vaste-lengte')
+    start_5 = time.time()
     encoded_vast = obj.vaste_lengte_encodeer(bronsymbolen_vast, alfabet_scalair)
     #print('bronsymbolen_encoded = ', encoded_vast)
     decoded_vast = obj.vaste_lengte_decodeer(encoded_vast, alfabet_scalair)
     #print('bronsymbolen_decoded = ', decoded_vast)
+    stop_5 = time.time()
+    print('Time: vaste_lengte_encodeer + decodeer = ', stop_5 - start_5, '\n')
+    """
 
     return 1
     

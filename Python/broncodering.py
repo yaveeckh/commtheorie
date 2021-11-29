@@ -25,7 +25,7 @@ def code(node, dictionary, val = ''):
     if(node.right):
         dictionary.update(code(node.right,dictionary, newVal))
     if(not node.left and not node.right):
-        dictionary[str(node.symbol)] = newVal
+        dictionary[node.symbol] = newVal
     
     return dictionary
 
@@ -121,7 +121,7 @@ class Broncodering():
         while len(bronsymbolen) > 1:
             aantal_macrosymbolen += 1
             index = alfabet_vector.index(str(bronsymbolen[0]) + str(bronsymbolen[1]))
-            macrosymbolen.append(str(index+1))
+            macrosymbolen.append(index+1)
             rel_freq[index] += 1
             del bronsymbolen[0]
             del bronsymbolen[0]
@@ -144,6 +144,7 @@ class Broncodering():
         for macro in macrosymbolen:
             bronsymbolen.append(alfabet_scalair[(int(macro) - 1)//len(alfabet_scalair)])
             bronsymbolen.append(alfabet_scalair[(int(macro) - 1)%len(alfabet_scalair)])
+            
         # bronsymbolen : vector met macrosymbolen omgezet in bronsymbolen
         return bronsymbolen
     
@@ -169,7 +170,8 @@ class Broncodering():
         
         output = np.zeros(0,dtype=int)
         output = np.hstack(output_temp)
-                       
+
+        #datatype = np.array
         return output
    
     # functie die de data sequentie decodeert met Huffman code - niet veranderen
@@ -187,8 +189,10 @@ class Broncodering():
         indx_tree = indx_reset
         for idx in range(N):
             next_index = data[idx]
-            indx_tree = boom[indx_tree-1, next_index]
+            indx_tree = boom[indx_tree-1, int(next_index)]
             if(indx_tree<=M):
                 output.append(indx_tree-1)
                 indx_tree = indx_reset
+        #datatype = np.array
         return alfabet[output]
+
