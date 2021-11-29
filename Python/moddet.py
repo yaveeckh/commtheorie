@@ -31,6 +31,10 @@ class ModDet():
                     if bits == '01': a.append(complex(0,1))
                     if bits == '11': a.append(-1)
                     if bits == '10': a.append(complex(0,-1))
+
+            elif constellatie == '4QAM':
+                pass
+
             
        
         # a: sequentie van data symbolen
