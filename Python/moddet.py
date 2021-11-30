@@ -28,23 +28,23 @@ class ModDet():
             if constellatie == '4PSK':
                 for bits in bitvector:
                     if bits == '00': a.append(1)
-                    if bits == '01': a.append(complex(0,1))
-                    if bits == '11': a.append(-1)
-                    if bits == '10': a.append(complex(0,-1))
+                    elif bits == '01': a.append(complex(0,1))
+                    elif bits == '11': a.append(-1)
+                    elif bits == '10': a.append(complex(0,-1))
 
             elif constellatie == '4QAM':
                 for bits in bitvector:
                     if bits == '00': a.append(complex(math.sqrt(2)/2,math.sqrt(2)/2))
-                    if bits == '01': a.append(complex(-math.sqrt(2)/2,math.sqrt(2)/2))
-                    if bits == '11': a.append(complex(-math.sqrt(2)/2,-math.sqrt(2)/2))
-                    if bits == '10': a.append(complex(math.sqrt(2)/2,-math.sqrt(2)/2))
+                    elif bits == '01': a.append(complex(-math.sqrt(2)/2,math.sqrt(2)/2))
+                    elif bits == '11': a.append(complex(-math.sqrt(2)/2,-math.sqrt(2)/2))
+                    elif bits == '10': a.append(complex(math.sqrt(2)/2,-math.sqrt(2)/2))
             
             elif constellatie == '4PAM':
                 for bits in bitvector:
                     if bits == '00': a.append(-3*math.sqrt(5)/5)
-                    if bits == '01': a.append(-math.sqrt(5)/5)
-                    if bits == '11': a.append(math.sqrt(5)/5)
-                    if bits == '10': a.append(3*math.sqrt(5)/5)
+                    elif bits == '01': a.append(-math.sqrt(5)/5)
+                    elif bits == '11': a.append(math.sqrt(5)/5)
+                    elif bits == '10': a.append(3*math.sqrt(5)/5)
 
         # a: sequentie van data symbolen
         return a
@@ -55,7 +55,32 @@ class ModDet():
         # constellatie: ofwel 'BPSK',ofwel '4QAM',ofwel '4PSK',ofwel'4PAM'
         
         # Implementeer vanaf hier
-        
+        bitstring = []
+        if constellatie == 'BPSK':
+            for datasymbol in a:
+                if datasymbol == -1: bitstring.append(0)
+                elif datasymbol == 1: bitstring.append(1)
+        elif constellatie == '4PSK':
+            for datasymbol in a:
+                if datasymbol == 1: bitstring.extend([0,0])
+                elif datasymbol == complex(0,1): bitstring.extend([0,1])
+                elif datasymbol == -1: bitstring.extend([1,1])
+                elif datasymbol == complex(0,-1): bitstring.extend([1,0])
+        elif constellatie == '4QAM':
+            for datasymbol in a:
+                if datasymbol.real == math.sqrt(2)/2:
+                    if datasymbol.imag == math.sqrt(2)/2: bitstring.extend([0,0])
+                    elif datasymbol.imag == -math. sqrt(2)/2: bitstring.extend([1,0])
+                elif datasymbol.real == -math.sqrt(2)/2:
+                    if datasymbol.imag == math.sqrt(2)/2: bitstring.extend([0,1])
+                    elif datasymbol.imag == -math. sqrt(2)/2: bitstring.extend([1,1])
+        elif constellatie == '4PAM':
+            for datasymbol in a:
+                if datasymbol == -3*math.sqrt(5)/5: bitstring.extend([0,0])
+                elif datasymbol == -math.sqrt(5)/5: bitstring.extend([0,1])
+                elif datasymbol == math.sqrt(5)/5: bitstring.extend([1,1])
+                elif datasymbol == 3*math.sqrt(5)/5: bitstring.extend([1,0])
+                
         # bitstring : sequentie van bits
         return bitstring
     

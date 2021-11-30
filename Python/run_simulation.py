@@ -230,11 +230,12 @@ def run_moddet():
     for bit in bitstring:
         bitvector.append(int(bit))
     
-    print(bitvector)
-    print(obj.mapper(bitvector,'BPSK'))
-    print(obj.mapper(bitvector,'4QAM'))
-    print(obj.mapper(bitvector,'4PAM'))
-    print(obj.mapper(bitvector,'4PSK'))
+    print('testing mapper and demapper for:', bitvector)
+    if (obj.demapper(obj.mapper(bitvector,'BPSK'), 'BPSK') == bitvector): print('BPSK works!')
+    if (obj.demapper(obj.mapper(bitvector,'4QAM'), '4QAM') == bitvector): print('4QAM works!')
+    if (obj.demapper(obj.mapper(bitvector,'4PAM'), '4PAM') == bitvector): print('4PAM works!')
+    if (obj.demapper(obj.mapper(bitvector,'4PSK'), '4PSK') == bitvector): print('4PSK works!')
+      
     return 1
 
 warnings.simplefilter('ignore') # ignore warnings of integral
