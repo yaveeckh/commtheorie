@@ -19,16 +19,23 @@ class Kanaalcodering():
         bitenc = np.matmul(bitstring_vec, G)
                 
         # bitenc : vector met gecodeerde bits
-        return bitenc
+        return list(bitenc)
     
     # functie die de decoder van de uitwendige code implementeert
     def decodeer_uitwendig(bitstring):
         # bitstring : vector met gecodeerde bits
-        
+        bitstring_vec = np.array(bitstring)
+
         H = np.array([[1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],[0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0 ],[0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1],[1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0]])
         # Implementeer vanaf hier
+        s = np.matmul(bitstring_vec, np.transpose(H))
+
+        if (s == np.zeros((1, 10))):
+            bool_fout = 0
+        else: bool_fout = 1
         
         
+
         # bitdec : vector met gedecodeerde bits bij volledige foutcorrectie
         # bool_fout : 1 als een fout gedetecteerd is bij zuivere foutdetectie, 0 anders        
         return(bitdec,bool_fout)
