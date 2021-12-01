@@ -10,12 +10,13 @@ class Kanaalcodering():
     # functie die de encoder van de uitwendige code implementeert
     def encodeer_uitwendig(bitstring):
         # bitstring : vecter met ongecodeerde bits
-        
+        bitstring_vec = np.array(bitstring)
         # generator matrix
-        
+        G = np.array([[1,1,0,0,0,0,0,0,1,0,0,0,0,0], [0,1,0,0,0,1,0,0,1,0,1,0,0,0], [0,0,1,0,0,1,1,0,0,0,0,0,0,0], [0,1,0,1,0,1,1,0,0,0,0,0,0,0], [0,1,0,0,1,1,0,0,0,0,0,0,0,0], [0,0,0,0,0,1,1,0,1,0,0,1,0,0], [0,0,0,0,0,1,0,0,1,0,0,0,1,0], [0,1,0,0,0,1,1,1,1,0,0,0,0,0], [0,1,0,0,0,0,1,0,0,0,0,0,0,1], [0,1,0,0,0,0,1,0,0,0,0,0,0,1], [0,0,0,0,0,0,1,0,1,1,0,0,0,0]])
         
         # Implementeer vanaf hier
         
+        bitenc = np.matmul(bitstring_vec, G)
                 
         # bitenc : vector met gecodeerde bits
         return bitenc
