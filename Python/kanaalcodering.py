@@ -25,16 +25,30 @@ class Kanaalcodering():
     def decodeer_uitwendig(bitstring):
         # bitstring : vector met gecodeerde bits
         bitstring_vec = np.array(bitstring)
+        bool_fout = 0
+        bitdec = np.zeros((1,10))
 
         H = np.array([[1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],[0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0 ],[0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1],[1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0]])
         # Implementeer vanaf hier
         s = np.matmul(bitstring_vec, np.transpose(H))
 
-        if (s == np.zeros((1, 10))):
+        if (s == np.zeros((1, 4))):
             bool_fout = 0
         else: bool_fout = 1
         
-        
+        #syndroom tabel
+
+        syn = np.array([[0,0,0,0],[1,0,0,1],[1,0,0,0],[0,1,1,0],[1,1,1,0],[1,1,0,0],[0,1,0,0],[0,0,1,0],[1,1,1,1],[0,0,0,1],[0,0,1,1],[1,1,0,1],[0,1,1,1],[0,1,0,1],[1,0,1,0],[1,0,1,1]])
+        err = np.array([[0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,1,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,1,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,1,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,1,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,1,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,1,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,1,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,1,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,1,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,1,0,0,0,0,0,0,0]])
+
+        if (s == syn[0]):
+            bool_fout = 0
+            bitdec = bitstring_vec
+        else:
+            bool_fout = 1
+            e = err[np.where(s = syn)]
+            bitdec = np.mdo((bitstring_vec + e))
+                
 
         # bitdec : vector met gedecodeerde bits bij volledige foutcorrectie
         # bool_fout : 1 als een fout gedetecteerd is bij zuivere foutdetectie, 0 anders        
