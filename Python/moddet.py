@@ -80,7 +80,7 @@ class ModDet():
                 elif datasymbol == -math.sqrt(5)/5: bitstring.extend([0,1])
                 elif datasymbol == math.sqrt(5)/5: bitstring.extend([1,1])
                 elif datasymbol == 3*math.sqrt(5)/5: bitstring.extend([1,0])
-                
+
         # bitstring : sequentie van bits
         return bitstring
     
@@ -156,12 +156,18 @@ class ModDet():
         return rdown
     
     # funcitie die het AWGN kanaal simuleert
-    def kanaal(s,sigma,hch):
+    def kanaal(s,sigma,hch = 1):
         # s : ingang van het kanaal
         # sigma : standaard deviatie van de ruis
         # hch : amplitude van het kanaal
     
         # Implementeer vanaf hier
+        r = []
+        #nl = 
+        for sample in s:
+            #r.append(hch*sample*nl)
+            pass
+
         
         # r : uitgang van het kanaal
         return r
