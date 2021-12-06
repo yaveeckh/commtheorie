@@ -3,13 +3,17 @@ import numpy as np
 import numpy.matlib
 import matplotlib.pyplot as plt
 import math
+import cmath
+
+import pulse
+
 
 class ModDet():
-    def __init__():
+    def __init__(self):
         pass
     
     # funcite die bitstring omzet naar complexe symbolen
-    def mapper(bitstring, constellatie):
+    def mapper(self, bitstring, constellatie):
         # bitstring : sequentie van bits
         # constellatie: ofwel 'BPSK',ofwel '4QAM',ofwel '4PSK',ofwel'4PAM'
                 
@@ -102,12 +106,13 @@ class ModDet():
         # theta_hat : schatting van fase van de demodulator
         
         # Implementeer vanaf hier
+        u = rdown * math.exp(-1j*(F*T + theta_hat)) / (A * math.abs(theta_hat))
                 
         # u : vector met decisie-variabele
         return u
     
     # functie die de modulatie implementeert
-    def moduleer(a,T,Ns,frequentie,alpha,Lf):
+    def moduleer(self, a,T,Ns,frequentie,alpha,Lf):
         # a : sequentie van data symbolen 
         # T : symboolperiode in seconden
         # Ns : aantal samples per symbool
@@ -116,7 +121,18 @@ class ModDet():
         # Lf : pulse duur uitgedrukt in aantal symboolintervallen
         
         # Implementeer vanaf hier
-        
+        x, s, c= np.zeros(2*Lf*Ns + 1), np.zeros(2*Lf*Ns + 1), np.zeros(2*Lf*Ns + 1)
+        pulsevector = np.zeros(len(a))
+
+        for l in range(2*Lf*Ns + 1):
+            t = l*Ns/T - Lf*Ns
+            for k in range(len(a)) : pulsevector[k] = self.pulse(t-k*T, T, alpha)
+            
+            x[l] = np.sum(a*pulsevector)
+            c[l] = x[l]*cmath.exp(1j*2*math.pi*frequentie*t)
+
+        s = math.sqrt(2)*c.real
+
         # s : vector met gemoduleerde samples
         return s
     
@@ -131,17 +147,17 @@ class ModDet():
         # theta : fase van de demodulator
         
         # Implementeer vanaf hier
-               
+
                
         
         return rdemod
     
     # functie die de pulse aanmaakt - niet veranderen
-    def pulse(t,T,alpha):
+    def pulse(self, t,T,alpha):
         een = (1-alpha)*np.sinc(t*(1-alpha)/T)
         twee = (alpha)*np.cos(math.pi*(t/T-0.25))*np.sinc(alpha*t/T-0.25)
         drie = (alpha)*np.cos(math.pi*(t/T+0.25))*np.sinc(alpha*t/T+0.25)
-        y = 1/np.sqrt(T)*(een+twee+drie);
+        y = 1/np.sqrt(T)*(een+twee+drie)
         return y
     
     # functie die het decimeren implementeert

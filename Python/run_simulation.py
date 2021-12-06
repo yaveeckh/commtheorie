@@ -224,13 +224,14 @@ def run_kanaalcodering():
     return 1
 
 def run_moddet():
-    obj = ModDet
+    obj = ModDet()
     bitstring = bin(random.randint(0,255))[2:].zfill(8)
     bitvector = []
     for bit in bitstring:
         bitvector.append(int(bit))
     
     print('testing mapper and demapper for:', bitvector)
+    """
     if (obj.demapper(obj.mapper(bitvector,'BPSK'), 'BPSK') == bitvector): print('BPSK works!')
     if (obj.demapper(obj.mapper(bitvector,'4QAM'), '4QAM') == bitvector): print('4QAM works!')
     if (obj.demapper(obj.mapper(bitvector,'4PAM'), '4PAM') == bitvector): print('4PAM works!')
@@ -238,8 +239,13 @@ def run_moddet():
 
     samples = np.array([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
     print('Testing Channel (adding white noise):')
-    print(obj.kanaal(samples, 0.01, 1))
-      
+    print(obj.kanaal(samples, 0.01, 1)) """
+
+    print('Testing modulation:')    
+    print(obj.mapper(bitvector, '4QAM'))
+    s = obj.moduleer(obj.mapper(bitvector,'4QAM'), 10**(-6), 3, 2*10**6, 0.5, 10)
+    print(s)
+
     return 1
 
 warnings.simplefilter('ignore') # ignore warnings of integral
