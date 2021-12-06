@@ -162,13 +162,8 @@ class ModDet():
         # hch : amplitude van het kanaal
     
         # Implementeer vanaf hier
-        r = []
-        #nl = 
-        for sample in s:
-            #r.append(hch*sample*nl)
-            pass
-
+        noise = np.random.normal(0, sigma, len(s))
         
         # r : uitgang van het kanaal
-        return r
+        return hch*s + noise
     

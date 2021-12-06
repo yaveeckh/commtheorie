@@ -235,6 +235,10 @@ def run_moddet():
     if (obj.demapper(obj.mapper(bitvector,'4QAM'), '4QAM') == bitvector): print('4QAM works!')
     if (obj.demapper(obj.mapper(bitvector,'4PAM'), '4PAM') == bitvector): print('4PAM works!')
     if (obj.demapper(obj.mapper(bitvector,'4PSK'), '4PSK') == bitvector): print('4PSK works!')
+
+    samples = np.array([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
+    print('Testing Channel (adding white noise):')
+    print(obj.kanaal(samples, 0.01, 1))
       
     return 1
 
