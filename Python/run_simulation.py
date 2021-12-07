@@ -9,6 +9,7 @@ import warnings
 import copy
 import time
 import random
+import math
 
 from playsound import playsound
 
@@ -225,7 +226,7 @@ def run_kanaalcodering():
 
 def run_moddet():
     obj = ModDet()
-    bitstring = bin(random.randint(0,255))[2:].zfill(8)
+    bitstring = bin(random.randint(0,2**16))[2:].zfill(16)
     bitvector = []
     for bit in bitstring:
         bitvector.append(int(bit))
@@ -245,11 +246,13 @@ def run_moddet():
     a = obj.mapper(bitvector, '4QAM')
     print(a)
     s = obj.moduleer(a, 10**(-6), 6, 2*10**6, 0.5, 10)
-    print(s)
-    r = obj.kanaal(s, 0.01, 1)
-    print(r)
-
-    return 1
+    r = obj.kanaal(s, math.sqrt(0.75*6/2/(10**(-6))), 1)
+    rdemod = obj.demoduleer(r, 10**(-6), 6, 2*10**6, 0.5, 10, math.pi/16)
+    rdown = obj.decimatie(rdemod, 6, 10)
+    u = obj.maak_decisie_variabele(rdown, 1, math.pi/16)
+    a_estim = obj.decisie(u, '4QAM')
+    print(a_estim)
+    return 
 
 warnings.simplefilter('ignore') # ignore warnings of integral
 
