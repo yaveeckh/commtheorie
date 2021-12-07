@@ -43,6 +43,7 @@ def run_kwantisatie():
     opt_lin_kwant = obj.bepaal_optimale_lineaire_kwantisator(2**6, True)
     r_opt_lin = opt_lin_kwant[4]
     q_opt_lin = opt_lin_kwant[5]
+    gekwantiseerd_lin = obj.kwantiseer(r_opt_lin, q_opt_lin)
     
 
     """
@@ -64,7 +65,7 @@ def run_kwantisatie():
     compansie_kwant = obj.bepaal_compansie_kwantisator(2**6)
     r_compansie = compansie_kwant[3]
     q_compansie = compansie_kwant[4]
-    gekwantiseerd = obj.kwantiseer(r_compansie, q_compansie)
+    gekwantiseerd_compansie = obj.kwantiseer(r_compansie, q_compansie)
 
     """
     print('Generating plot: fU(u)')
@@ -76,15 +77,35 @@ def run_kwantisatie():
     obj.plot_distributie('fu_compansie.png')
     print('Done!')
     """
+    """
+    #########################
+    # Lloyd-Max KWANTISATOR #
+    #########################
+    print('LLOYD-MAX QUANTISATION')
+    print('-----------------------')
+    
+    opt_kwant = obj.bepaal_Lloyd_Max_kwantisator(2**6)
+    r_opt = opt_kwant[3]
+    q_opt = opt_kwant[4]
+    gekwantiseerd_opt = obj.kwantiseer(r_opt, q_opt)
 
+    
+    print('Generating plot: fU(u)')
+    plt.figure(figsize=(20,10))
+    for i in range(0, 2**6):
+        plt.axvline(q_opt[i], 0, 0.1, color = 'k', lw = 0.5)
+        plt.axvline(r_opt[i], 0, 0.2, color = 'r', lw = 0.5)
+    plt.axvline(r_opt[2**6], 0, 0.2, color = 'r', lw = 0.5)
+    obj.plot_distributie('fu_opt.png')
+    print('Done!')
+    """
 
     ###########################
 
     # Sla de gekwantiseerde fragmenten ook op: ’uniform.wav’, ’LM.wav’ en ’compansie.wav’
     #bj.save_and_play_music(obj.kwantiseer(r_opt_lin, q_opt_lin), "uniform.wav", 0)
     #obj.save_and_play_music(obj.kwantiseer(r_compansie, q_compansie), "compansie.wav", 0)
-
-    return (r_compansie,q_compansie,gekwantiseerd)
+    return (r_opt_lin,q_opt_lin,gekwantiseerd_lin)
     
 def run_broncodering():
     obj = Broncodering()
@@ -145,10 +166,10 @@ def run_broncodering():
     #############################################################################################
     
     start = time.time()
-    # op kwantisatie - compansie
-    r_compansie, q_compansie, bronsymbolen = run_kwantisatie()
+    # op kwantisatie
+    r, q, bronsymbolen = run_kwantisatie()
     #print('bronsymbolen = ', bronsymbolen)
-    print('q_compansie = ', q_compansie, '\n')
+    print('q = ', q, '\n')
     bronsymbolen_vast = copy.deepcopy(bronsymbolen)
     
 
@@ -156,7 +177,7 @@ def run_broncodering():
     print('BRONCODERING')
     print('----------------------- \n')
     print('Bron -> Macro')
-    alfabet_scalair = q_compansie
+    alfabet_scalair = q
     macrosymbolen, alfabet_vector, rel_freq = obj.scalair_naar_vector(bronsymbolen, alfabet_scalair)
     entropie = 0.0
     for kans in rel_freq:
@@ -242,6 +263,6 @@ warnings.simplefilter('ignore') # ignore warnings of integral
 
 
 #run_kwantisatie()
-#run_broncodering()
+run_broncodering()
 #run_kanaalcodering()
-run_moddet()
+#run_moddet()

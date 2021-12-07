@@ -151,4 +151,5 @@ a = Kanaalcodering.encodeer_uitwendig([1,0,0,0,1,1,0,1,1,0])
 print(a)
 b = Kanaalcodering.decodeer_uitwendig(a)
 print(b)
+
     

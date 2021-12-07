@@ -4,7 +4,7 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.integrate as integrate
-from scipy.integrate._ivp.radau import P
+from scipy.integrate._ivp.radau import E, P
 
 from pulse import pulse
 from playsound import playsound
@@ -517,7 +517,7 @@ class Kwantisatie():
     def kwantiseer(self,r,q):
         # r : kwantisatiedremples
         # q : kwantisatieniveaus
-                
+        
         data = self.data # originele monsterwaarden
         # Implementeer vanaf hier
         
@@ -526,8 +526,15 @@ class Kwantisatie():
 
         for index, data_point in enumerate(data):
             for i in range(len(r) - 1):
-                if data_point > r[i] and data_point <= r[i+1]:
+                if data_point < r[0]:
+                    samples_kwantiseerd[index] = q[0]
+                    break
+                elif data_point > r[i] and data_point <= r[i+1]:
                     samples_kwantiseerd[index] = q[i]
                     break
+                elif data_point > r[-1]:
+                    samples_kwantiseerd[index] = q[-1]
+                    break
+
         return samples_kwantiseerd
 
