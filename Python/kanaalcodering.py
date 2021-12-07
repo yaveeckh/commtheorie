@@ -133,22 +133,52 @@ class Kanaalcodering():
         # bool_fout : 1 als een fout gedetecteerd is bij zuivere foutdetectie, 0 anders
         return (bitdec,bool_fout)
 
+    def kanaalencodering_1(data_binair):
+        bit_string = ""
 
-print("----Test 1: Inwendig a---")
-g_x = [1,1,0,1,0,1]
-a = Kanaalcodering.encodeer_inwendig([1,1,0,1,1],g_x)
-print(a)
-print(Kanaalcodering.decodeer_inwendig(a, g_x))
+        for bit in data_binair:
+            bit_string += bit
+        
+        bitvec = [int(bit) for bit in bit_string]
 
-print("----Test 2: Inwendig b---")
-g_x = [1,1,0,0,1,1,0,1,1]
-a = Kanaalcodering.encodeer_inwendig([1,1,0,1,1],g_x)
-print(a)
-print(Kanaalcodering.decodeer_inwendig(a, [1,1,0,1,0,1]))
+        bitvec_grouped = [bitvec[i*10: 10*i+10] for i in range(len(bitvec)//10)]
 
-print("---Test 3: Blokcode ---")
-a = Kanaalcodering.encodeer_uitwendig([1,0,0,0,1,1,0,1,1,0])
-print(a)
-b = Kanaalcodering.decodeer_uitwendig(a)
-print(b)
+        bitvec_encoded = [list(Kanaalcodering.encodeer_uitwendig(t)) for t in bitvec_grouped]
+
+        output_bitstring = []
+        for i in bitvec_encoded: output_bitstring+=i
+        return output_bitstring
+
+    def kanaaldecodering_1(data_binair):
+        
+        bitvec_grouped = [data_binair[i*14: 14*i+14] for i in range(len(data_binair)//14)]
+
+        bitvec_decoded = [list(Kanaalcodering.decodeer_uitwendig(bits)[0]) for bits in bitvec_grouped]
+
+        output_bitstring = []
+        for i in bitvec_decoded: output_bitstring+=i
+        return output_bitstring
+
     
+        
+# print("----Test 1: Inwendig a---") 
+# g_x = [1,1,0,1,0,1]
+# a = Kanaalcodering.encodeer_inwendig([1,1,0,1,1],g_x)
+# print(a)
+# print(Kanaalcodering.decodeer_inwendig(a, g_x))
+
+# print("----Test 2: Inwendig b---")
+# g_x = [1,1,0,0,1,1,0,1,1]
+# a = Kanaalcodering.encodeer_inwendig([1,1,0,1,1],g_x)
+# print(a)
+# print(Kanaalcodering.decodeer_inwendig(a, [1,1,0,1,0,1]))
+
+# print("---Test 3: Blokcode ---")
+# a = Kanaalcodering.encodeer_uitwendig([1,0,0,0,1,1,0,1,1,0])
+# print(a)
+# b = Kanaalcodering.decodeer_uitwendig(a)
+# print(b)
+
+data_binair =  ['11' '10' '01' '00' '10' '01' '01' '00' '00' '00']
+a = Kanaalcodering.kanaaldecodering_1(Kanaalcodering.kanaalencodering_1(data_binair))
+print(a)
