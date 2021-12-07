@@ -28,7 +28,7 @@ class Kanaalcodering():
         ])
         # Implementeer vanaf hier
         
-        bitenc = np.fmod(np.matmul(bitstring_vec, G),2)
+        bitenc = np.mod(np.matmul(bitstring_vec, G),2)
                 
         # bitenc : vector met gecodeerde bits
         return bitenc
@@ -45,11 +45,10 @@ class Kanaalcodering():
         # # Implementeer vanaf hier
         
         bitstring_vec = np.array(bitstring)
-        s = np.fmod(np.matmul(bitstring_vec,np.transpose(H)),2)
+        s = np.mod(np.matmul(bitstring_vec,np.transpose(H)),2)
        
         bool_fout = False if (np.all(s == 0)) else True
         
-
         syn = np.array([
             [0,0,0,0],
             [1,0,0,1],
@@ -91,6 +90,7 @@ class Kanaalcodering():
 
         e = np.zeros(14)
         r_c = np.zeros(14)
+
         if (bool_fout):
             index = 0
             for i in range(16):
@@ -101,6 +101,7 @@ class Kanaalcodering():
             r_c = np.bitwise_xor(bitstring_vec, e)
         else:
             r_c = bitstring_vec
+
         idx = [0,10,2,3,4,11,12,7,13,9]
         bitdec = r_c[idx]
         # bitdec : vector met gedecodeerde bits bij volledige foutcorrectie
@@ -113,8 +114,8 @@ class Kanaalcodering():
         # g_x : CRC-veelterm
         # Implementeer vanaf hier
         shift = [1] + [0] * (len(g_x) - 1)
-        b_shifted = np.abs(np.fmod(np.polymul(bitstring, shift),2))
-        remainder = np.abs(np.fmod(np.polydiv(b_shifted, g_x)[1],2))
+        b_shifted = np.mod(np.polymul(bitstring, shift),2)
+        remainder = np.mod(np.polydiv(b_shifted, g_x)[1],2)
         bitenc = np.polyadd(b_shifted, remainder)
         # bitenc : vector met gecodeerde bits
         return bitenc
@@ -125,7 +126,7 @@ class Kanaalcodering():
         # g_x : CRC-veelterm
         # Implementeer vanaf hier
         
-        rem = np.abs(np.fmod(np.polydiv(bitstring, g_x)[1], 2))
+        rem = np.mod(np.polydiv(bitstring, g_x)[1], 2)
         bool_fout = False if np.all((rem == 0)) else True
         bitdec = bitstring[:len(g_x)-1]
         # bitenc : vector met gedecodeerde bits
