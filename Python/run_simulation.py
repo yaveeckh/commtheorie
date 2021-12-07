@@ -230,7 +230,7 @@ def run_moddet():
     for bit in bitstring:
         bitvector.append(int(bit))
     
-    print('testing mapper and demapper for:', bitvector)
+    print('testing for:', bitvector)
     """
     if (obj.demapper(obj.mapper(bitvector,'BPSK'), 'BPSK') == bitvector): print('BPSK works!')
     if (obj.demapper(obj.mapper(bitvector,'4QAM'), '4QAM') == bitvector): print('4QAM works!')
@@ -242,9 +242,12 @@ def run_moddet():
     print(obj.kanaal(samples, 0.01, 1)) """
 
     print('Testing modulation:')    
-    print(obj.mapper(bitvector, '4QAM'))
-    s = obj.moduleer(obj.mapper(bitvector,'4QAM'), 10**(-6), 3, 2*10**6, 0.5, 10)
+    a = obj.mapper(bitvector, '4QAM')
+    print(a)
+    s = obj.moduleer(a, 10**(-6), 6, 2*10**6, 0.5, 10)
     print(s)
+    r = obj.kanaal(s, 0.01, 1)
+    print(r)
 
     return 1
 

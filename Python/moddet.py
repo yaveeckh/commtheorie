@@ -54,7 +54,7 @@ class ModDet():
         return a
     
     # functie die complexe symbolen omzet naar bits
-    def demapper(a, constellatie):
+    def demapper(self, a, constellatie):
         # a: sequentie van data symbolen
         # constellatie: ofwel 'BPSK',ofwel '4QAM',ofwel '4PSK',ofwel'4PAM'
         
@@ -89,7 +89,7 @@ class ModDet():
         return bitstring
     
     # functie die decisie toepast op u
-    def decisie(u,constellatie):
+    def decisie(self,u,constellatie):
         # u: vector met ruizige (complexe) symbolen
         # constellatie: ofwel 'BPSK',ofwel '4QAM',ofwel '4PSK',ofwel'4PAM'
         
@@ -100,7 +100,7 @@ class ModDet():
         return a_estim
     
     # funcie die de decisie variabele aanmaakt
-    def maak_decisie_variabele(rdown,hch_hat,theta_hat):
+    def maak_decisie_variabele(self,rdown,hch_hat,theta_hat):
         # rdown : vector met het gedecimeerde ontvangen signaal
         # hch_hat : schatting van amplitude van het kanaal
         # theta_hat : schatting van fase van de demodulator
@@ -137,7 +137,7 @@ class ModDet():
         return s
     
     # functie die de demodulatie implementeert
-    def demoduleer(r,T,Ns,frequentie,alpha,Lf,theta):
+    def demoduleer(self,r,T,Ns,frequentie,alpha,Lf,theta):
         # r : sequentie van ontvangen samples
         # T : symboolperiode in seconden
         # Ns : aantal samples per symbool
@@ -147,13 +147,21 @@ class ModDet():
         # theta : fase van de demodulator
         
         # Implementeer vanaf hier
+        Ts = T/Ns
 
+        rr, p = np.zeros(len(r)), np.zeros(len(r))
+        for index in range(2*Lf*Ns + 1):
+            l = index - Lf*Ns
+            rr[index] = math.sqrt(2) * r[index] * math.exp(-1j*(2*math.pi*frequentie*l*Ts + theta))
+            p[index] = self.pulse(index*T, T, alpha)
+
+        rdemod = Ts * np.convolve(p,rr)
                
         
         return rdemod
     
     # functie die de pulse aanmaakt - niet veranderen
-    def pulse(self, t,T,alpha):
+    def pulse(self,t,T,alpha):
         een = (1-alpha)*np.sinc(t*(1-alpha)/T)
         twee = (alpha)*np.cos(math.pi*(t/T-0.25))*np.sinc(alpha*t/T-0.25)
         drie = (alpha)*np.cos(math.pi*(t/T+0.25))*np.sinc(alpha*t/T+0.25)
@@ -161,7 +169,7 @@ class ModDet():
         return y
     
     # functie die het decimeren implementeert
-    def decimatie(rdemod,Ns,Lf):
+    def decimatie(self,rdemod,Ns,Lf):
         # rdemod : vector met Ns samples per symbool
         # Ns : aantal samples per symbool
         # Lf : pulse duur uitgedruikt in aantal symboolintervallen
@@ -172,7 +180,7 @@ class ModDet():
         return rdown
     
     # funcitie die het AWGN kanaal simuleert
-    def kanaal(s,sigma,hch = 1):
+    def kanaal(self,s,sigma,hch):
         # s : ingang van het kanaal
         # sigma : standaard deviatie van de ruis
         # hch : amplitude van het kanaal
@@ -181,5 +189,6 @@ class ModDet():
         noise = np.random.normal(0, sigma, len(s))
         
         # r : uitgang van het kanaal
-        return hch*s + noise
+        r = hch*s + noise
+        return r
     
