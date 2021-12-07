@@ -171,7 +171,6 @@ def run_broncodering():
     #print('bronsymbolen = ', bronsymbolen)
     print('q = ', q, '\n')
     bronsymbolen_vast = copy.deepcopy(bronsymbolen)
-    
 
 
     print('BRONCODERING')
@@ -194,7 +193,7 @@ def run_broncodering():
     start_1 = time.time()
     index_lijst = [i + 1 for i in range(len(alfabet_vector))]
     dictionary, gem_len, codetabel = obj.maak_codetabel_Huffman(rel_freq, index_lijst)
-    #print('dictionary = ', dictionary, '\n')
+    print('dictionary = ', dictionary, '\n')
     print('gem_len = ', gem_len)
     #print('codetabel = ',codetabel, '\n')
     stop_1 = time.time()
@@ -207,15 +206,16 @@ def run_broncodering():
     data_binair_str = ''
     for datapoint in data_binair:
         data_binair_str += datapoint
-    print('data_binair = ', data_binair, '\n')
+    #print('data_binair = ', data_binair, '\n')
     stop_2 = time.time()
     print('Time: Huffman_encodeer = ', stop_2 - start_2, '\n')
-    
+    with open('data.txt', 'w') as file_out:
+        file_out.write('\n'.join(data_binair))
 
     print('Binair -> macro')
     start_3 = time.time()
     data_macro = obj.Huffman_decodeer(data_binair_str, np.array(codetabel), np.array(index_lijst))
-    print('data_macro = ', data_macro, '\n')
+    #print('data_macro = ', data_macro, '\n')
     stop_3 = time.time()
     print('Time: Huffman_decodeer = ', stop_3 - start_3, '\n')
 
@@ -223,7 +223,7 @@ def run_broncodering():
     print('Macro -> Bron')
     start_4 = time.time()
     data_bron = obj.vector_naar_scalair(data_macro, alfabet_scalair)
-    print('data_bron = ', data_bron, '\n')
+    #print('data_bron = ', data_bron, '\n')
     stop_4 = time.time()
     print('Time: vector_naar_scalair = ', stop_4 - start_4, '\n')
     
@@ -231,9 +231,9 @@ def run_broncodering():
     print('Vaste-lengte')
     start_5 = time.time()
     encoded_vast = obj.vaste_lengte_encodeer(bronsymbolen_vast, alfabet_scalair)
-    print('bronsymbolen_encoded = ', encoded_vast)
+    #print('bronsymbolen_encoded = ', encoded_vast)
     decoded_vast = obj.vaste_lengte_decodeer(encoded_vast, alfabet_scalair)
-    print('bronsymbolen_decoded = ', decoded_vast)
+    #print('bronsymbolen_decoded = ', decoded_vast)
     stop_5 = time.time()
     print('Time: vaste_lengte_encodeer + decodeer = ', stop_5 - start_5, '\n')
     
