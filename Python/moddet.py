@@ -3,13 +3,25 @@ import numpy as np
 import numpy.matlib
 import matplotlib.pyplot as plt
 import math
+import cmath
+
+import pulse
+
 
 class ModDet():
-    def __init__():
+    def __init__(self):
         pass
     
-    # funcite die bitstring omzet naar complexe symbolen
-    def mapper(bitstring, constellatie):
+    def mappingstabel(self, constellatie):
+        tabel = []
+        if   constellatie == 'BPSK': tabel = np.array([-1,1])
+        elif constellatie == '4PSK': tabel = np.array([1,1j,-1,-1j])
+        elif constellatie == '4QAM': tabel = np.array([1+1j,-1+1j,-1-1j,1-1j]) * math.sqrt(2)/2
+        elif constellatie == '4PAM': tabel = np.array([-3, -1, 1, 3]) * math.sqrt(5)/5
+        return tabel
+
+    # functie die bitstring omzet naar complexe symbolen
+    def mapper(self, bitstring, constellatie):
         # bitstring : sequentie van bits
         # constellatie: ofwel 'BPSK',ofwel '4QAM',ofwel '4PSK',ofwel'4PAM'
                 
@@ -45,12 +57,12 @@ class ModDet():
                     elif bits == '01': a.append(-math.sqrt(5)/5)
                     elif bits == '11': a.append(math.sqrt(5)/5)
                     elif bits == '10': a.append(3*math.sqrt(5)/5)
-
+            
         # a: sequentie van data symbolen
-        return a
+        return np.array(a)
     
     # functie die complexe symbolen omzet naar bits
-    def demapper(a, constellatie):
+    def demapper(self, a, constellatie):
         # a: sequentie van data symbolen
         # constellatie: ofwel 'BPSK',ofwel '4QAM',ofwel '4PSK',ofwel'4PAM'
         
@@ -85,29 +97,43 @@ class ModDet():
         return bitstring
     
     # functie die decisie toepast op u
-    def decisie(u,constellatie):
+    def decisie(self,u,constellatie):
         # u: vector met ruizige (complexe) symbolen
         # constellatie: ofwel 'BPSK',ofwel '4QAM',ofwel '4PSK',ofwel'4PAM'
         
         # Implementeer vanaf hier
-        
-        
+        mappingstabel = self.mappingstabel(constellatie)
+        a_estim = []
+        for uk in u:
+            distances = abs(mappingstabel - uk)
+            index = np.where(distances == np.amin(distances))
+            a_estim_k = mappingstabel[index[0][0]]
+            a_estim.append(a_estim_k)
+
         # a_estim : vector met geschatte (complexe) symbolen
-        return a_estim
+        return np.array(a_estim)
     
     # funcie die de decisie variabele aanmaakt
-    def maak_decisie_variabele(rdown,hch_hat,theta_hat):
+    def maak_decisie_variabele(self,rdown,hch_hat,theta_hat, scatterplot = 0):
         # rdown : vector met het gedecimeerde ontvangen signaal
         # hch_hat : schatting van amplitude van het kanaal
         # theta_hat : schatting van fase van de demodulator
         
         # Implementeer vanaf hier
+        u = rdown/hch_hat*np.exp(1j*theta_hat)
+
+        if scatterplot:
+            u_real =  [e.real for e in u]
+            u_complex = [e.imag for e in u]
+            plt.scatter(u_real, u_complex)
+            plt.show()
+            plt.close()
                 
         # u : vector met decisie-variabele
         return u
     
     # functie die de modulatie implementeert
-    def moduleer(a,T,Ns,frequentie,alpha,Lf):
+    def moduleer(self, a,T,Ns,frequentie,alpha,Lf):
         # a : sequentie van data symbolen 
         # T : symboolperiode in seconden
         # Ns : aantal samples per symbool
@@ -116,12 +142,32 @@ class ModDet():
         # Lf : pulse duur uitgedrukt in aantal symboolintervallen
         
         # Implementeer vanaf hier
+        t_vector = np.linspace(-Lf*T, Lf*T, 2*Lf*Ns + 1)
+        pulsevector = self.pulse(t_vector, T, alpha)
         
+        # plt.plot(t_vector, pulsevector)
+        # plt.show()
+        # plt.close()
+        x = np.zeros((2*Lf + len(a) - 1)*Ns + 1, dtype=np.complex128)
+
+        for i in range(len(a)):
+            begin_index = i*Ns
+            eind_index = begin_index + 2*Lf*Ns + 1
+            x[begin_index:eind_index] += a[i]*pulsevector
+
+        t = np.linspace(0, (2*Lf + len(a) - 1)*T, (2*Lf + len(a) - 1)*Ns + 1)
+
+        c = x*np.exp(1j*2*math.pi*frequentie*t)
+
         # s : vector met gemoduleerde samples
+        s = math.sqrt(2)*c.real
+        # plt.plot(t, s)
+        # plt.show()
+        # plt.close()
         return s
     
     # functie die de demodulatie implementeert
-    def demoduleer(r,T,Ns,frequentie,alpha,Lf,theta):
+    def demoduleer(self,r,T,Ns,frequentie,alpha,Lf,theta):
         # r : sequentie van ontvangen samples
         # T : symboolperiode in seconden
         # Ns : aantal samples per symbool
@@ -131,44 +177,46 @@ class ModDet():
         # theta : fase van de demodulator
         
         # Implementeer vanaf hier
-               
-               
+        Ts = T/Ns
+        t = np.array([i*Ts for i in range(0,len(r))])
+
+        rr = math.sqrt(2)*r*np.exp(-1j*(2*math.pi*frequentie*t+ theta))
+        t_vector = np.linspace(-Lf*T, Lf*T, 2*Lf*Ns + 1)
+        pulsevector = self.pulse(t_vector, T, alpha)
+       
+        rdemod = Ts * np.convolve(pulsevector,rr)  
         
         return rdemod
     
     # functie die de pulse aanmaakt - niet veranderen
-    def pulse(t,T,alpha):
+    def pulse(self,t,T,alpha):
         een = (1-alpha)*np.sinc(t*(1-alpha)/T)
         twee = (alpha)*np.cos(math.pi*(t/T-0.25))*np.sinc(alpha*t/T-0.25)
         drie = (alpha)*np.cos(math.pi*(t/T+0.25))*np.sinc(alpha*t/T+0.25)
-        y = 1/np.sqrt(T)*(een+twee+drie);
+        y = 1/np.sqrt(T)*(een+twee+drie)
         return y
     
     # functie die het decimeren implementeert
-    def decimatie(rdemod,Ns,Lf):
+    def decimatie(self,rdemod,Ns,Lf):
         # rdemod : vector met Ns samples per symbool
         # Ns : aantal samples per symbool
         # Lf : pulse duur uitgedruikt in aantal symboolintervallen
-        s
-        # Implementeer vanaf hier
         
+        # Implementeer vanaf hier
+        rdown = rdemod[2*Lf*Ns:-2*Lf*Ns:Ns] 
         # rdown: vector met 1 sample per symbool 
         return rdown
     
     # funcitie die het AWGN kanaal simuleert
-    def kanaal(s,sigma,hch = 1):
+    def kanaal(self,s,sigma,hch):
         # s : ingang van het kanaal
         # sigma : standaard deviatie van de ruis
         # hch : amplitude van het kanaal
     
         # Implementeer vanaf hier
-        r = []
-        #nl = 
-        for sample in s:
-            #r.append(hch*sample*nl)
-            pass
-
+        noise = np.random.normal(0, sigma, len(s))
         
         # r : uitgang van het kanaal
+        r = hch*s + noise
         return r
     

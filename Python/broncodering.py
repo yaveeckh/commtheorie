@@ -16,18 +16,20 @@ class Node:
         # 0 or 1
         self.code = ''
 
+
 # Helper function to make codes for the nodes
-def code(node, dictionary, val = ''):
+def code(node,gemiddeldeLengtes, dictionary, val = ''):
     newVal = val + str(node.code)
 
     if(node.left):
-        dictionary.update(code(node.left,dictionary, newVal))
+        dictionary.update(code(node.left, gemiddeldeLengtes, dictionary, newVal)[0])
     if(node.right):
-        dictionary.update(code(node.right,dictionary, newVal))
+        dictionary.update(code(node.right, gemiddeldeLengtes, dictionary, newVal)[0])
     if(not node.left and not node.right):
         dictionary[node.symbol] = newVal
+        gemiddeldeLengtes[node.symbol - 1] = len(newVal)*node.prob
     
-    return dictionary
+    return [dictionary, gemiddeldeLengtes]
 
 class Broncodering():
     def __init__(self):
@@ -45,11 +47,13 @@ class Broncodering():
         # boom : matrix met boomstructuur (zie opgave)
         nodes = []
         for i, symbol in enumerate(alfabet):
-            nodes.append(Node(rel_freq[i], symbol))
+            if(rel_freq[i] != 0.0):
+                nodes.append(Node(rel_freq[i], symbol))
 
         boom = [[0, 0] for _ in range(M)]
         counter = M
         nodes = sorted(nodes, key=lambda x: x.prob)
+
         while len(nodes) > 1:
             
             right = nodes[0]
@@ -63,22 +67,38 @@ class Broncodering():
 
             boom.append([left.symbol, right.symbol])
 
+            # Gebruikte nodes om samen te voegen, nu verwijderen
             nodes.remove(left)
             nodes.remove(right)
-            nodes.append(newNode)
-        
-        dictionary = code(nodes[0], dictionary)
-        # gem_len : gemiddelde codewoordlengte
+
+            # Node op de juiste positie toevoegen
+            if nodes:
+                index = 0
+                while(newNode.prob > nodes[index].prob):
+                    if index == len(nodes) - 1:
+                        break
+                    index += 1
+                if index == len(nodes) - 1 and newNode.prob > nodes[index].prob:
+                    nodes.append(newNode)
+                else:
+                    nodes.insert(index, newNode)
+            else:
+                nodes.append(newNode)
+
+        gemiddeldeLengtes = [0 for _ in range(len(rel_freq))]
+        result = code(nodes[0], gemiddeldeLengtes, dictionary)
+        dictionary = result[0]
+        gemiddeldeLengtes = result[1]
+
         gem_len = 0
-        for value in dictionary.values():
-            gem_len += len(value)
-        gem_len /= M
+        for value in gemiddeldeLengtes:
+            gem_len += value
 
         return (dictionary,gem_len,boom)
 
     # functie voor het encoderen met vaste-lengte code
     def vaste_lengte_encodeer(self, data,alfabet):
-        # data : de data die geëncodeerd moet worden (lijst?)
+        # data : de data die geencodeerd moet worden (lijst?)
         # alfabet : vector met alle mogelijke symbolen
 
         # Implementeer vanaf hier
@@ -86,7 +106,7 @@ class Broncodering():
         data_geencodeerd = []
         for datapoint in data:
             data_geencodeerd.append(bin(alfabet.index(datapoint))[2:].zfill(lengte))
-        # data_gecodeerd : de geëncodeerde data
+        # data_gecodeerd : de geencodeerde data
         return data_geencodeerd
        
     # functie voor het decoderen met vaste-lengte code
@@ -150,7 +170,7 @@ class Broncodering():
     
     # functie die de data sequentie encodeert met Huffman code - niet veranderen
     def Huffman_encodeer(self, data,dictionary):
-        # data : de data die geëncodeerd moet worden
+        # data : de data die geencodeerd moet worden
         # dictionary : dictionary met symbolen als key en codewoord als value
         
         N = len(data)
