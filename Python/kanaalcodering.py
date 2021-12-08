@@ -133,7 +133,7 @@ class Kanaalcodering():
         # bool_fout : 1 als een fout gedetecteerd is bij zuivere foutdetectie, 0 anders
         return (bitdec,bool_fout)
 
-
+"""
 print("----Test 1: Inwendig a---")
 g_x = [1,1,0,1,0,1]
 a = Kanaalcodering.encodeer_inwendig([1,1,0,1,1],g_x)
@@ -151,5 +151,6 @@ a = Kanaalcodering.encodeer_uitwendig([1,0,0,0,1,1,0,1,1,0])
 print(a)
 b = Kanaalcodering.decodeer_uitwendig(a)
 print(b)
+"""
 
     
