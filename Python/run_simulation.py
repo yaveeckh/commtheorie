@@ -37,12 +37,12 @@ def run_kwantisatie():
     """
     # Plot nu opnieuw de distributie fU (u) waarbij de bekomen 
     # kwantisatiedrempels en reconstructieniveaus duidelijk zijn aangegeven.
-    """
-    opt_lin_kwant = obj.bepaal_optimale_lineaire_kwantisator(2**6, True)
-    r_opt_lin = opt_lin_kwant[4]
-    q_opt_lin = opt_lin_kwant[5]
-    gekwantiseerd_lin = obj.kwantiseer(r_opt_lin, q_opt_lin)
-    """
+    
+    # opt_lin_kwant = obj.bepaal_optimale_lineaire_kwantisator(2**6, True)
+    # r_opt_lin = opt_lin_kwant[4]
+    # q_opt_lin = opt_lin_kwant[5]
+    # gekwantiseerd_lin = obj.kwantiseer(r_opt_lin, q_opt_lin)
+    
 
     """
     print('Generating plot: fU(u)')
@@ -58,10 +58,10 @@ def run_kwantisatie():
     # COMPANSIE KWANTISATOR #
     #########################
     
-    compansie_kwant = obj.bepaal_compansie_kwantisator(2**6)
-    r_compansie = compansie_kwant[3]
-    q_compansie = compansie_kwant[4]
-    gekwantiseerd_compansie = obj.kwantiseer(r_compansie, q_compansie)
+    # compansie_kwant = obj.bepaal_compansie_kwantisator(2**6)
+    # r_compansie = compansie_kwant[3]
+    # q_compansie = compansie_kwant[4]
+    # gekwantiseerd_compansie = obj.kwantiseer(r_compansie, q_compansie)
 
     """
     print('Generating plot: fU(u)')
@@ -74,7 +74,7 @@ def run_kwantisatie():
     print('Done!')
     """
 
-    """
+    
     #########################
     # Lloyd-Max KWANTISATOR #
     #########################
@@ -84,7 +84,7 @@ def run_kwantisatie():
     q_opt = opt_kwant[4]
     gekwantiseerd_opt = obj.kwantiseer(r_opt, q_opt)
 
-    
+    """
     print('Generating plot: fU(u)')
     plt.figure(figsize=(20,10))
     for i in range(0, 2**6):
@@ -100,25 +100,20 @@ def run_kwantisatie():
     # Sla de gekwantiseerde fragmenten ook op
     #obj.save_and_play_music(obj.kwantiseer(r_opt_lin, q_opt_lin), "uniform.wav", 0)
     #obj.save_and_play_music(obj.kwantiseer(r_compansie, q_compansie), "compansie.wav", 0)
-    #obj.save_and_play_music(obj.kwantiseer(r_opt, q_opt), "LM.wav", 0)
+    #obj.save_and_play_music(np.array(obj.kwantiseer(r_opt, q_opt)), "LM.wav", 0)
 
-    #return (r_opt,q_opt,gekwantiseerd_opt)
-    return (r_compansie,q_compansie,gekwantiseerd_compansie)
-    #return (r_opt_lin,q_opt_lin,gekwantiseerd_lin)
+    return (r_opt,q_opt,gekwantiseerd_opt)
 
     
 def run_broncodering():
     obj = Broncodering()
     
     print('Kwantisatie')
-    start = time.time()
     r, q, bronsymbolen = run_kwantisatie()
-    bronsymbolen_vast = copy.deepcopy(bronsymbolen)
-    stop = time.time()
-    print('Time: kwantisatie = ', stop - start, '\n')
+    r = r.tolist()
+    q = q.tolist()
 
 
-    start_0 = time.time()
     print('Bron -> Macro')
     alfabet_scalair = q
     macrosymbolen, alfabet_vector, rel_freq = obj.scalair_naar_vector(bronsymbolen, alfabet_scalair)
@@ -127,58 +122,23 @@ def run_broncodering():
         if kans != 0.0:
             entropie -= kans*np.log2(kans)
     print('entropie = ', entropie)
-    stop_0 = time.time()
-    print('Time: scalair_naar_vector = ', stop_0 - start_0, '\n')
     
 
     print('Codetabel + dictionary')
-    start_1 = time.time()
     index_lijst = [i + 1 for i in range(len(alfabet_vector))]
     dictionary, gem_len, codetabel = obj.maak_codetabel_Huffman(rel_freq, index_lijst)
     print('gem_len = ', gem_len)
-    stop_1 = time.time()
-    print('Time: maak_codetabel_Huffman = ', stop_1 - start_1, '\n')
 
 
     print('Macro -> binair')
-    start_2 = time.time()
     data_binair = obj.Huffman_encodeer(np.array(macrosymbolen), dictionary)
     data_binair_str = ''
     for datapoint in data_binair:
         data_binair_str += datapoint
-    stop_2 = time.time()
-    print('Time: Huffman_encodeer = ', stop_2 - start_2, '\n')
-    with open('data_compansie.txt', 'w') as file_out:
-        file_out.write('\n'.join(data_binair))
+
+    return data_binair_str
 
 
-    print('Binair -> macro')
-    start_3 = time.time()
-    data_macro = obj.Huffman_decodeer(data_binair_str, np.array(codetabel), np.array(index_lijst))
-    stop_3 = time.time()
-    print('Time: Huffman_decodeer = ', stop_3 - start_3, '\n')
-
-    
-    print('Macro -> Bron')
-    start_4 = time.time()
-    data_bron = obj.vector_naar_scalair(data_macro, alfabet_scalair)
-    stop_4 = time.time()
-    print('Time: vector_naar_scalair = ', stop_4 - start_4, '\n')
-    data_bron_str = []
-    for data_point in data_bron:
-        data_bron_str.append(str(data_point))
-    with open('Macro>Bron.txt', 'w') as file_out:
-        file_out.write('\n'.join(data_bron_str))
-
-
-    print('Vaste-lengte')
-    start_5 = time.time()
-    encoded_vast = obj.vaste_lengte_encodeer(bronsymbolen_vast, alfabet_scalair)
-    decoded_vast = obj.vaste_lengte_decodeer(encoded_vast, alfabet_scalair)
-    stop_5 = time.time()
-    print('Time: vaste_lengte_encodeer + decodeer = ', stop_5 - start_5, '\n')
-
-    return 1
     
 
 def run_kanaalcodering():
