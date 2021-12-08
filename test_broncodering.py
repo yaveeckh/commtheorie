@@ -1,4 +1,3 @@
-    """
     # TEST
 
     # Bron -> Macro
@@ -49,4 +48,3 @@
     print('bronsymbolen_encoded = ', encoded)
     decoded = obj.vaste_lengte_decodeer(encoded, alfabet)
     print('bronsymbolen_decoded = ', decoded)
-    """

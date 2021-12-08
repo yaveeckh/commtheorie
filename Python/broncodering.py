@@ -3,6 +3,7 @@ from numpy.core.fromnumeric import sort
 from numpy.core.numeric import True_
 import numpy.matlib
 import math
+import bisect
 
 # Node in the Huffman tree
 class Node:
@@ -50,6 +51,7 @@ class Broncodering():
         boom = [[0, 0] for _ in range(M)]
         counter = M
         nodes = sorted(nodes, key=lambda x: x.prob)
+
         while len(nodes) > 1:
             
             right = nodes[0]
@@ -63,12 +65,25 @@ class Broncodering():
 
             boom.append([left.symbol, right.symbol])
 
+            # Gebruikte nodes om samen te voegen, nu verwijderen
             nodes.remove(left)
             nodes.remove(right)
-            nodes.append(newNode)
-        
+
+            # Node op de juiste positie toevoegen
+            if nodes:
+                index = 0
+                while(newNode.prob > nodes[index].prob):
+                    if index == len(nodes) - 1:
+                        break
+                    index += 1
+                if index == len(nodes) - 1 and newNode.prob > nodes[index].prob:
+                    nodes.append(newNode)
+                else:
+                    nodes.insert(index, newNode)
+            else:
+                nodes.append(newNode)
+
         dictionary = code(nodes[0], dictionary)
-        # gem_len : gemiddelde codewoordlengte
         gem_len = 0
         for value in dictionary.values():
             gem_len += len(value)

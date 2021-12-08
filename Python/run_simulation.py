@@ -136,7 +136,8 @@ def run_broncodering():
     start_1 = time.time()
     index_lijst = [i + 1 for i in range(len(alfabet_vector))]
     dictionary, gem_len, codetabel = obj.maak_codetabel_Huffman(rel_freq, index_lijst)
-    #print('dictionary = ', dictionary, '\n')
+    print('rel_freq = ', rel_freq, '\n')
+    print('dictionary = ', dictionary, '\n')
     print('gem_len = ', gem_len)
     stop_1 = time.time()
     print('Time: maak_codetabel_Huffman = ', stop_1 - start_1, '\n')
@@ -166,8 +167,11 @@ def run_broncodering():
     data_bron = obj.vector_naar_scalair(data_macro, alfabet_scalair)
     stop_4 = time.time()
     print('Time: vector_naar_scalair = ', stop_4 - start_4, '\n')
+    data_bron_str = []
+    for data_point in data_bron:
+        data_bron_str.append(str(data_point))
     with open('Macro>Bron.txt', 'w') as file_out:
-        file_out.write('\n'.join(data_bron))
+        file_out.write('\n'.join(data_bron_str))
 
 
     print('Vaste-lengte')
@@ -176,7 +180,7 @@ def run_broncodering():
     decoded_vast = obj.vaste_lengte_decodeer(encoded_vast, alfabet_scalair)
     stop_5 = time.time()
     print('Time: vaste_lengte_encodeer + decodeer = ', stop_5 - start_5, '\n')
-    
+
     return 1
     
 
@@ -207,7 +211,7 @@ def run_moddet():
     
     print('TESTING MODDET:')
     print('---------------')
-    print("BPSK: ", end='')
+    print("BPSK: ")
     a = obj.mapper(bitvector_in, 'BPSK')
     s = obj.moduleer(a, T, Ns, f0, alpha, Lf)
     r = obj.kanaal(s, sigma, hch)
@@ -219,7 +223,7 @@ def run_moddet():
     if bitvector_in == bitvector_out: print('OK') 
     else: print('NOT OK')
 
-    print('4QAM: ', end='')
+    print('4QAM: ')
     a = obj.mapper(bitvector_in, '4QAM')
     s = obj.moduleer(a, T, Ns, f0, alpha, Lf)
     r = obj.kanaal(s, sigma, hch)
@@ -231,7 +235,7 @@ def run_moddet():
     if bitvector_in[:slice] == bitvector_out: print('OK') 
     else: print('NOT OK')
 
-    print('4PAM: ', end='')
+    print('4PAM: ')
     a = obj.mapper(bitvector_in, '4PAM')
     s = obj.moduleer(a, T, Ns, f0, alpha, Lf)
     r = obj.kanaal(s, sigma, hch)
@@ -243,7 +247,7 @@ def run_moddet():
     if bitvector_in[:slice] == bitvector_out: print('OK') 
     else: print('NOT OK')
 
-    print('4PSK: ', end='')
+    print('4PSK: ')
     a = obj.mapper(bitvector_in, '4PSK')
     s = obj.moduleer(a, T, Ns, f0, alpha, Lf)
     r = obj.kanaal(s, sigma, hch)
