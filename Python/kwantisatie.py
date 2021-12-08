@@ -154,7 +154,7 @@ class Kwantisatie():
         return Uvec
     
     # functie om distributie en genormaliseerd histogram te plotten
-    def plot_distributie(self, filename):
+    def plot_distributie(self):
         data = self.data # originele monsterwaarden
         f_u = self.f_u # w.d.f. - anonieme functie
         
@@ -164,7 +164,9 @@ class Kwantisatie():
         y = fu(u)
         plt.plot(u,y)
         plt.hist(data, density=True)
-        plt.savefig(filename, dpi=300)
+        plt.xlabel("Monsterwaarde u")
+        plt.ylabel("Dichtheid f(u)")
+        plt.savefig('distributie.png')
         plt.close()
         
     
@@ -210,6 +212,8 @@ class Kwantisatie():
             plt.plot(delta,y)
             plt.plot(delta_2,y_2)
             plt.plot(delta_3,y_3)
+            plt.xlabel("Delta")
+            plt.ylabel("GKD")
             plt.savefig('sigma.png')
             plt.close()
 
@@ -340,7 +344,9 @@ class Kwantisatie():
         g_u_vec = np.vectorize(g_u)
         Uvec = np.linspace(-1, 1, 100)         
         Yvals = g_u_vec(Uvec)
-        plt.plot(Uvec, Yvals)   
+        plt.plot(Uvec, Yvals)  
+        plt.xlabel("u")
+        plt.ylabel("g(u)")
         plt.savefig('gu.png')
         plt.close()
 
