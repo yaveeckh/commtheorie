@@ -158,7 +158,7 @@ class Kanaalcodering():
         output_bitstring = []
         for i in bitvec_decoded: output_bitstring+=i
         return output_bitstring
-
+    
     
         
 # print("----Test 1: Inwendig a---") 
@@ -182,3 +182,6 @@ class Kanaalcodering():
 data_binair =  ['11' '10' '01' '00' '10' '01' '01' '00' '00' '00']
 a = Kanaalcodering.kanaaldecodering_1(Kanaalcodering.kanaalencodering_1(data_binair))
 print(a)
+
+
+    
