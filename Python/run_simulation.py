@@ -225,6 +225,15 @@ def run_kanaalcodering():
     return 1
 
 def run_moddet():
+    #variables:
+    T = 10**(-6)
+    Ns = 6
+    f0 = 2*10**6
+    alpha = 0.5
+    Lf = 10
+    N0 = 0.75
+    sigma = math.sqrt(N0*Ns/2/T)
+    hch = 1
     obj = ModDet()
     bitstring = bin(random.randint(0,2**16))[2:].zfill(16)
     bitvector = []
