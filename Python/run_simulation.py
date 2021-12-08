@@ -9,6 +9,7 @@ import warnings
 import copy
 import time
 import random
+import math
 
 from playsound import playsound
 
@@ -245,19 +246,43 @@ def run_kanaalcodering():
     return 1
 
 def run_moddet():
-    obj = ModDet
-    bitstring = bin(random.randint(0,255))[2:].zfill(8)
+    #variables:
+    T = 10**(-6)
+    Ns = 6
+    f0 = 2*10**6
+    alpha = 0.5
+    Lf = 10
+    N0 = 0.75
+    sigma = math.sqrt(N0*Ns/2/T)
+    hch = 1
+    obj = ModDet()
+    bitstring = bin(random.randint(0,2**16))[2:].zfill(16)
     bitvector = []
     for bit in bitstring:
         bitvector.append(int(bit))
     
-    print('testing mapper and demapper for:', bitvector)
+    print('testing for:', bitvector)
+    """
     if (obj.demapper(obj.mapper(bitvector,'BPSK'), 'BPSK') == bitvector): print('BPSK works!')
     if (obj.demapper(obj.mapper(bitvector,'4QAM'), '4QAM') == bitvector): print('4QAM works!')
     if (obj.demapper(obj.mapper(bitvector,'4PAM'), '4PAM') == bitvector): print('4PAM works!')
     if (obj.demapper(obj.mapper(bitvector,'4PSK'), '4PSK') == bitvector): print('4PSK works!')
-      
-    return 1
+
+    samples = np.array([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
+    print('Testing Channel (adding white noise):')
+    print(obj.kanaal(samples, 0.01, 1)) """
+
+    print('Testing modulation:')    
+    a = obj.mapper(bitvector, '4QAM')
+    print(a)
+    s = obj.moduleer(a, 10**(-6), 6, 2*10**6, 0.5, 10)
+    r = obj.kanaal(s, math.sqrt(0.75*6/2/(10**(-6))), 1)
+    rdemod = obj.demoduleer(r, 10**(-6), 6, 2*10**6, 0.5, 10, math.pi/16)
+    rdown = obj.decimatie(rdemod, 6, 10)
+    u = obj.maak_decisie_variabele(rdown, 1, math.pi/16)
+    a_estim = obj.decisie(u, '4QAM')
+    print(a_estim)
+    return 
 
 warnings.simplefilter('ignore') # ignore warnings of integral
 
