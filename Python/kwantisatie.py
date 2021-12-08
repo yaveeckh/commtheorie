@@ -398,8 +398,3 @@ class Kwantisatie():
                     break
 
         return samples_kwantiseerd
-
-obj = Kwantisatie(0)
-a = obj.bepaal_Lloyd_Max_kwantisator(64)
-samples = obj.kwantiseer(a[3],a[4])
-obj.save_and_play_music(np.array(samples), "lm.wav", 1)
