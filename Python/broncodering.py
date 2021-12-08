@@ -78,7 +78,7 @@ class Broncodering():
 
     # functie voor het encoderen met vaste-lengte code
     def vaste_lengte_encodeer(self, data,alfabet):
-        # data : de data die geëncodeerd moet worden (lijst?)
+        # data : de data die geencodeerd moet worden (lijst?)
         # alfabet : vector met alle mogelijke symbolen
 
         # Implementeer vanaf hier
@@ -86,7 +86,7 @@ class Broncodering():
         data_geencodeerd = []
         for datapoint in data:
             data_geencodeerd.append(bin(alfabet.index(datapoint))[2:].zfill(lengte))
-        # data_gecodeerd : de geëncodeerde data
+        # data_gecodeerd : de geencodeerde data
         return data_geencodeerd
        
     # functie voor het decoderen met vaste-lengte code
@@ -150,7 +150,7 @@ class Broncodering():
     
     # functie die de data sequentie encodeert met Huffman code - niet veranderen
     def Huffman_encodeer(self, data,dictionary):
-        # data : de data die geëncodeerd moet worden
+        # data : de data die geencodeerd moet worden
         # dictionary : dictionary met symbolen als key en codewoord als value
         
         N = len(data)
