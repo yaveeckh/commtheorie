@@ -1,3 +1,4 @@
+def run_broncodering():
     obj = Broncodering()
     
     print('Kwantisatie')
@@ -27,7 +28,7 @@
     index_lijst = [i + 1 for i in range(len(alfabet_vector))]
     dictionary, gem_len, codetabel = obj.maak_codetabel_Huffman(rel_freq, index_lijst)
     print('rel_freq = ', rel_freq, '\n')
-    print('dictionary = ', dictionary, '\n')
+    #print('dictionary = ', dictionary, '\n')
     print('gem_len = ', gem_len)
     stop_1 = time.time()
     print('Time: maak_codetabel_Huffman = ', stop_1 - start_1, '\n')
@@ -70,3 +71,5 @@
     decoded_vast = obj.vaste_lengte_decodeer(encoded_vast, alfabet_scalair)
     stop_5 = time.time()
     print('Time: vaste_lengte_encodeer + decodeer = ', stop_5 - start_5, '\n')
+
+    return 1

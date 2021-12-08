@@ -113,7 +113,6 @@ def run_broncodering():
     print('Kwantisatie')
     start = time.time()
     r, q, bronsymbolen = run_kwantisatie()
-    print('q = ', q, '\n')
     bronsymbolen_vast = copy.deepcopy(bronsymbolen)
     stop = time.time()
     print('Time: kwantisatie = ', stop - start, '\n')
@@ -136,8 +135,6 @@ def run_broncodering():
     start_1 = time.time()
     index_lijst = [i + 1 for i in range(len(alfabet_vector))]
     dictionary, gem_len, codetabel = obj.maak_codetabel_Huffman(rel_freq, index_lijst)
-    print('rel_freq = ', rel_freq, '\n')
-    print('dictionary = ', dictionary, '\n')
     print('gem_len = ', gem_len)
     stop_1 = time.time()
     print('Time: maak_codetabel_Huffman = ', stop_1 - start_1, '\n')

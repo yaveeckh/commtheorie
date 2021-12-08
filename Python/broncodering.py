@@ -3,7 +3,6 @@ from numpy.core.fromnumeric import sort
 from numpy.core.numeric import True_
 import numpy.matlib
 import math
-import bisect
 
 # Node in the Huffman tree
 class Node:
@@ -17,18 +16,20 @@ class Node:
         # 0 or 1
         self.code = ''
 
+
 # Helper function to make codes for the nodes
-def code(node, dictionary, val = ''):
+def code(node,gemiddeldeLengtes, dictionary, val = ''):
     newVal = val + str(node.code)
 
     if(node.left):
-        dictionary.update(code(node.left,dictionary, newVal))
+        dictionary.update(code(node.left, gemiddeldeLengtes, dictionary, newVal)[0])
     if(node.right):
-        dictionary.update(code(node.right,dictionary, newVal))
+        dictionary.update(code(node.right, gemiddeldeLengtes, dictionary, newVal)[0])
     if(not node.left and not node.right):
         dictionary[node.symbol] = newVal
+        gemiddeldeLengtes[node.symbol - 1] = len(newVal)*node.prob
     
-    return dictionary
+    return [dictionary, gemiddeldeLengtes]
 
 class Broncodering():
     def __init__(self):
@@ -46,7 +47,8 @@ class Broncodering():
         # boom : matrix met boomstructuur (zie opgave)
         nodes = []
         for i, symbol in enumerate(alfabet):
-            nodes.append(Node(rel_freq[i], symbol))
+            if(rel_freq[i] != 0.0):
+                nodes.append(Node(rel_freq[i], symbol))
 
         boom = [[0, 0] for _ in range(M)]
         counter = M
@@ -83,11 +85,14 @@ class Broncodering():
             else:
                 nodes.append(newNode)
 
-        dictionary = code(nodes[0], dictionary)
+        gemiddeldeLengtes = [0 for _ in range(len(rel_freq))]
+        result = code(nodes[0], gemiddeldeLengtes, dictionary)
+        dictionary = result[0]
+        gemiddeldeLengtes = result[1]
+
         gem_len = 0
-        for value in dictionary.values():
-            gem_len += len(value)
-        gem_len /= M
+        for value in gemiddeldeLengtes:
+            gem_len += value
 
         return (dictionary,gem_len,boom)
 
