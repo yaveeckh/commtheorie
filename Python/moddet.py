@@ -114,13 +114,20 @@ class ModDet():
         return np.array(a_estim)
     
     # funcie die de decisie variabele aanmaakt
-    def maak_decisie_variabele(self,rdown,hch_hat,theta_hat):
+    def maak_decisie_variabele(self,rdown,hch_hat,theta_hat, scatterplot = 0):
         # rdown : vector met het gedecimeerde ontvangen signaal
         # hch_hat : schatting van amplitude van het kanaal
         # theta_hat : schatting van fase van de demodulator
         
         # Implementeer vanaf hier
         u = rdown/hch_hat*np.exp(1j*theta_hat)
+
+        if scatterplot:
+            u_real =  [e.real for e in u]
+            u_complex = [e.imag for e in u]
+            plt.scatter(u_real, u_complex)
+            plt.show()
+            plt.close()
                 
         # u : vector met decisie-variabele
         return u

@@ -37,12 +37,12 @@ def run_kwantisatie():
     """
     # Plot nu opnieuw de distributie fU (u) waarbij de bekomen 
     # kwantisatiedrempels en reconstructieniveaus duidelijk zijn aangegeven.
-    
+    """
     opt_lin_kwant = obj.bepaal_optimale_lineaire_kwantisator(2**6, True)
     r_opt_lin = opt_lin_kwant[4]
     q_opt_lin = opt_lin_kwant[5]
     gekwantiseerd_lin = obj.kwantiseer(r_opt_lin, q_opt_lin)
-    
+    """
 
     """
     print('Generating plot: fU(u)')
@@ -105,6 +105,7 @@ def run_kwantisatie():
     #return (r_opt,q_opt,gekwantiseerd_opt)
     return (r_compansie,q_compansie,gekwantiseerd_compansie)
     #return (r_opt_lin,q_opt_lin,gekwantiseerd_lin)
+
     
 def run_broncodering():
     obj = Broncodering()
@@ -189,36 +190,70 @@ def run_moddet():
     f0 = 2*10**6
     alpha = 0.5
     Lf = 10
-    N0 = 0.75
+    N0 = 0.05
     sigma = math.sqrt(N0*Ns/2/T)
     hch = 1
+    theta = math.pi / 16
+
     obj = ModDet()
-    bitstring = bin(random.randint(0,2**16))[2:].zfill(16)
-    bitvector = []
+    bitstring = bin(random.randint(0,2**1111))[2:].zfill(1111)
+    bitvector_in = []
     for bit in bitstring:
-        bitvector.append(int(bit))
+        bitvector_in.append(int(bit))
+    if(len(bitvector_in)%2 == 0):
+        slice = 0
+    else:
+        slice = -1
     
-    print('testing for:', bitvector)
-    """
-    if (obj.demapper(obj.mapper(bitvector,'BPSK'), 'BPSK') == bitvector): print('BPSK works!')
-    if (obj.demapper(obj.mapper(bitvector,'4QAM'), '4QAM') == bitvector): print('4QAM works!')
-    if (obj.demapper(obj.mapper(bitvector,'4PAM'), '4PAM') == bitvector): print('4PAM works!')
-    if (obj.demapper(obj.mapper(bitvector,'4PSK'), '4PSK') == bitvector): print('4PSK works!')
+    print('TESTING MODDET:')
+    print('---------------')
+    print("BPSK: ", end='')
+    a = obj.mapper(bitvector_in, 'BPSK')
+    s = obj.moduleer(a, T, Ns, f0, alpha, Lf)
+    r = obj.kanaal(s, sigma, hch)
+    rdemod = obj.demoduleer(r, T, Ns, f0, alpha, Lf, theta)
+    rdown = obj.decimatie(rdemod, Ns, Lf)
+    u = obj.maak_decisie_variabele(rdown, hch, theta)
+    a_estim = obj.decisie(u, 'BPSK')
+    bitvector_out = obj.demapper(a_estim, 'BPSK')
+    if bitvector_in == bitvector_out: print('OK') 
+    else: print('NOT OK')
 
-    samples = np.array([1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
-    print('Testing Channel (adding white noise):')
-    print(obj.kanaal(samples, 0.01, 1)) """
-
-    print('Testing modulation:')    
-    a = obj.mapper(bitvector, '4QAM')
-    print(a)
-    s = obj.moduleer(a, 10**(-6), 6, 2*10**6, 0.5, 10)
-    r = obj.kanaal(s, math.sqrt(0.75*6/2/(10**(-6))), 1)
-    rdemod = obj.demoduleer(r, 10**(-6), 6, 2*10**6, 0.5, 10, math.pi/16)
-    rdown = obj.decimatie(rdemod, 6, 10)
-    u = obj.maak_decisie_variabele(rdown, 1, math.pi/16)
+    print('4QAM: ', end='')
+    a = obj.mapper(bitvector_in, '4QAM')
+    s = obj.moduleer(a, T, Ns, f0, alpha, Lf)
+    r = obj.kanaal(s, sigma, hch)
+    rdemod = obj.demoduleer(r, T, Ns, f0, alpha, Lf, theta)
+    rdown = obj.decimatie(rdemod, Ns, Lf)
+    u = obj.maak_decisie_variabele(rdown, hch, theta)
     a_estim = obj.decisie(u, '4QAM')
-    print(a_estim)
+    bitvector_out = obj.demapper(a_estim, '4QAM')
+    if bitvector_in[:slice] == bitvector_out: print('OK') 
+    else: print('NOT OK')
+
+    print('4PAM: ', end='')
+    a = obj.mapper(bitvector_in, '4PAM')
+    s = obj.moduleer(a, T, Ns, f0, alpha, Lf)
+    r = obj.kanaal(s, sigma, hch)
+    rdemod = obj.demoduleer(r, T, Ns, f0, alpha, Lf, theta)
+    rdown = obj.decimatie(rdemod, Ns, Lf)
+    u = obj.maak_decisie_variabele(rdown, hch, theta)
+    a_estim = obj.decisie(u, '4PAM')
+    bitvector_out = obj.demapper(a_estim, '4PAM')
+    if bitvector_in[:slice] == bitvector_out: print('OK') 
+    else: print('NOT OK')
+
+    print('4PSK: ', end='')
+    a = obj.mapper(bitvector_in, '4PSK')
+    s = obj.moduleer(a, T, Ns, f0, alpha, Lf)
+    r = obj.kanaal(s, sigma, hch)
+    rdemod = obj.demoduleer(r, T, Ns, f0, alpha, Lf, theta)
+    rdown = obj.decimatie(rdemod, Ns, Lf)
+    u = obj.maak_decisie_variabele(rdown, hch, theta)
+    a_estim = obj.decisie(u, '4PSK')
+    bitvector_out = obj.demapper(a_estim, '4PSK')
+    if bitvector_in[:slice] == bitvector_out: print('OK') 
+    else: print('NOT OK')
     return 
 
 warnings.simplefilter('ignore') # ignore warnings of integral
