@@ -10,6 +10,7 @@ import copy
 import time
 import random
 import math
+from scipy.fft import fft, fftfreq
 
 from playsound import playsound
 
@@ -173,20 +174,46 @@ def run_moddet():
     f0 = 2*10**6
     alpha = 0.5
     Lf = 10
-    N0 = 0.05
+    N0 = 0.0005
     sigma = math.sqrt(N0*Ns/2/T)
     hch = 1
     theta = math.pi / 16
 
     obj = ModDet()
-    bitstring = bin(random.randint(0,2**1111))[2:].zfill(1111)
+    bitstring = bin(random.randint(0,2**1000))[2:].zfill(1000)
     bitvector_in = []
     for bit in bitstring:
         bitvector_in.append(int(bit))
     if(len(bitvector_in)%2 == 0):
-        slice = 0
+        slice = len(bitvector_in)
     else:
         slice = -1
+    
+    ######### PLOT |P(f)| ##########
+    
+    def plot_puls(alhpa, filename):
+        t_theorie = np.linspace(-1000*Lf*T, 1000*Lf*T, 2*Lf*Ns*1000 + 1)
+        t_vector = np.linspace(-Lf*T, Lf*T, 2*Lf*Ns + 1)
+        afgeknot = obj.pulse(t_vector, T, alhpa)
+        afgeknot_fourier = fft(afgeknot)*T/Ns
+        afgeknot_x = fftfreq(2*Lf*Ns + 1, d=T/Ns)
+
+        theorie = obj.pulse(t_theorie, T, alpha)
+        theorie_fourier = fft(theorie)*T/Ns
+        theorie_x = fftfreq(2*1000*Lf*Ns +1, d=T/Ns)
+
+        plt.plot(afgeknot_x, np.abs(afgeknot_fourier))
+        plt.plot(theorie_x, np.abs(theorie_fourier))
+        
+        plt.savefig(filename)
+        plt.close()
+        return
+
+
+    # plot_puls(0.05)
+    # plot_puls(0.5)
+    plot_puls(0.95, "moddet/puls/alpha_95.png")
+    return
     
     print('TESTING MODDET:')
     print('---------------')
@@ -208,7 +235,7 @@ def run_moddet():
     r = obj.kanaal(s, sigma, hch)
     rdemod = obj.demoduleer(r, T, Ns, f0, alpha, Lf, theta)
     rdown = obj.decimatie(rdemod, Ns, Lf)
-    u = obj.maak_decisie_variabele(rdown, hch, theta)
+    u = obj.maak_decisie_variabele(rdown, hch, theta, 1, "moddet/4QAM_scatter.png")
     a_estim = obj.decisie(u, '4QAM')
     bitvector_out = obj.demapper(a_estim, '4QAM')
     if bitvector_in[:slice] == bitvector_out: print('OK') 
@@ -237,12 +264,14 @@ def run_moddet():
     bitvector_out = obj.demapper(a_estim, '4PSK')
     if bitvector_in[:slice] == bitvector_out: print('OK') 
     else: print('NOT OK')
+
+
     return 
 
 warnings.simplefilter('ignore') # ignore warnings of integral
 
 
-run_kwantisatie()
+#run_kwantisatie()
 #run_broncodering()
 #run_kanaalcodering()
 #run_moddet()
