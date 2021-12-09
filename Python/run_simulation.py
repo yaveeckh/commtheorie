@@ -28,7 +28,25 @@ def run_kwantisatie():
 
     
 def run_broncodering():
-    return 1
+    obj = Broncodering()
+    
+    print('Kwantisatie\n')
+    r, q, bronsymbolen = run_kwantisatie()
+    r = r.tolist()
+    q = q.tolist()
+
+    print('Vaste-lengte\n')
+    data_encoded = obj.vaste_lengte_encodeer(bronsymbolen, q)
+    data_encoded_str = ''
+    for bitstring in data_encoded:
+        for bit in bitstring:
+            data_encoded_str += bit
+
+    data_encoded_lijst = []
+    for bit in data_encoded_str:
+        data_encoded_lijst.append(bit)
+
+    return data_encoded_lijst
 
 def run_kanaalcodering():
     return 1
@@ -138,6 +156,6 @@ warnings.simplefilter('ignore') # ignore warnings of integral
 
 
 #run_kwantisatie()
-#run_broncodering()
+run_broncodering()
 #run_kanaalcodering()
 #run_moddet()

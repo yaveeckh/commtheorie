@@ -9,8 +9,16 @@ def run_broncodering_12():
 
     print('Vaste-lengte\n')
     data_encoded = obj.vaste_lengte_encodeer(bronsymbolen, q)
+    data_encoded_str = ''
+    for bitstring in data_encoded:
+        for bit in bitstring:
+            data_encoded_str += bit
+            
+    data_encoded_lijst = []
+    for bit in data_encoded_str:
+        data_encoded_lijst.append(bit)
 
-    return data_encoded
+    return data_encoded_lijst
 
 # Scalaire Huffmancodering
 def run_broncodering_345():
@@ -53,8 +61,12 @@ def run_broncodering_345():
     data_binair_str = ''
     for datapoint in data_binair:
         data_binair_str += str(datapoint)
+    
+    data_binair_lijst = []
+    for bit in data_binair_str:
+        data_binair_lijst.append(bit)
 
-    return data_binair_str
+    return data_binair_lijst
 
 # Vectoriele Huffmancodering
 def run_broncodering_6():
@@ -88,4 +100,8 @@ def run_broncodering_6():
     for datapoint in data_binair:
         data_binair_str += datapoint
 
-    return data_binair_str
+    data_binair_lijst = []
+    for bit in data_binair_str:
+        data_binair_lijst.append(bit)
+
+    return data_binair_lijst
