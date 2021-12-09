@@ -142,35 +142,15 @@ class Kanaalcodering():
         
         rem = np.mod(np.polydiv(bitstring, g_x)[1], 2)
         bool_fout = False if np.all((rem == 0)) else True
-        bitdec = bitstring[:len(g_x)-1]
+        bitdec = bitstring[:len(bitstring)-len(g_x)+1]
         # bitenc : vector met gedecodeerde bits
         # bool_fout : 1 als een fout gedetecteerd is bij zuivere foutdetectie, 0 anders
         return (bitdec,bool_fout)
-
-    def bron_enckanaal(bitstring):
-        bit_vec = np.array([])
-        for bits in bitstring:
-            for bit in bits:
-                bit_vec = np.append(bit_vec, int(bit))
-        bit_vec = bitstring
-
-        n = int(np.ceil(len(bit_vec)/10))
-        n_last_group = len(bit_vec) % 10
-        
-        if(n_last_group != 0):
-            bit_vec = np.append(bit_vec, np.array((10-n_last_group)*[0]))
-
-        bit_vec = np.resize(bit_vec, (n,10))
-        return bit_vec
 
     def kanaalencodering_1(self, bit_vec):
         bit_vec_encoded = np.array([self.encodeer_uitwendig(group) for group in bit_vec])
         return bit_vec_encoded
     
-
-    def kanaal_kanaaldec(bit_vec):
-        n = int(len(bit_vec)/14)
-        bit_vec = np.resize(bit_vec, (n,14))
 
     def kanaaldecodering_1(self, bit_vec, ARQ = False):
         
@@ -319,12 +299,12 @@ class Kanaalcodering():
         fout = False if np.all(rand_grouped == decoded_corrected) else True
         print(fout)
 
-    def simulation_3(self, p, n = 1000000 ,T_max = 2, g_x=[1,0,0,0,1,1,0,1,1,0]):
+    def simulation_3(self, p, n = 1000000 ,T_max = 2, g_x=[1,1,0,0,1,1,0,1,1]):
         T = 0
 
         rand = np.random.randint(0,2, n)
         rand_grouped = np.resize(rand, (int(len(rand)/2),2))
-        print(rand_grouped)
+        #print(rand_grouped)
         encoded = self.kanaalencodering_2(rand_grouped, g_x)
 
         #Simuleer kanaal door bits te veranderen
@@ -458,6 +438,6 @@ obj = Kanaalcodering()
 
 
 #c = obj.plot_s_1()
-print(obj.simulation_2(0.05,20, 5))
+print(obj.simulation_3(0.05,2000, 5))
 
 #print(obj.encodeer_inwendig([0,0,0,1,1], [1,1,1,1,0,1]))
