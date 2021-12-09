@@ -4,7 +4,8 @@ def run_broncodering():
     print('Kwantisatie')
     start = time.time()
     r, q, bronsymbolen = run_kwantisatie()
-    print('q = ', q, '\n')
+    r = r.tolist()
+    q = q.tolist()
     bronsymbolen_vast = copy.deepcopy(bronsymbolen)
     stop = time.time()
     print('Time: kwantisatie = ', stop - start, '\n')
@@ -27,8 +28,6 @@ def run_broncodering():
     start_1 = time.time()
     index_lijst = [i + 1 for i in range(len(alfabet_vector))]
     dictionary, gem_len, codetabel = obj.maak_codetabel_Huffman(rel_freq, index_lijst)
-    print('rel_freq = ', rel_freq, '\n')
-    #print('dictionary = ', dictionary, '\n')
     print('gem_len = ', gem_len)
     stop_1 = time.time()
     print('Time: maak_codetabel_Huffman = ', stop_1 - start_1, '\n')
@@ -42,8 +41,6 @@ def run_broncodering():
         data_binair_str += datapoint
     stop_2 = time.time()
     print('Time: Huffman_encodeer = ', stop_2 - start_2, '\n')
-    with open('data_compansie.txt', 'w') as file_out:
-        file_out.write('\n'.join(data_binair))
 
 
     print('Binair -> macro')
@@ -58,11 +55,6 @@ def run_broncodering():
     data_bron = obj.vector_naar_scalair(data_macro, alfabet_scalair)
     stop_4 = time.time()
     print('Time: vector_naar_scalair = ', stop_4 - start_4, '\n')
-    data_bron_str = []
-    for data_point in data_bron:
-        data_bron_str.append(str(data_point))
-    with open('Macro>Bron.txt', 'w') as file_out:
-        file_out.write('\n'.join(data_bron_str))
 
 
     print('Vaste-lengte')
