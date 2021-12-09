@@ -29,6 +29,7 @@ def run_kwantisatie():
     
 def run_broncodering():
     obj = Broncodering()
+    obj_2 = Kwantisatie()
     
     print('Kwantisatie\n')
     r, q, bronsymbolen = run_kwantisatie()
@@ -46,10 +47,15 @@ def run_broncodering():
     for bit in data_encoded_str:
         data_encoded_lijst.append(int(bit))
 
-    return data_encoded_lijst
+    bitlist_moddet = run_moddet(data_encoded_lijst)
+    data_decoded = obj.vaste_lengte_decodeer(bitlist_moddet, q)
+
+    obj_2.save_and_play_music(np.array(data_decoded), "Configuratie_1.wav", 1)
+
+    return data_decoded
 
 
-def run_moddet():
+def run_moddet(bitlist):
     obj = ModDet()
 
     #variables:
@@ -64,8 +70,6 @@ def run_moddet():
     hch = 1
     theta = math.pi / 16
 
-    bitlist = run_broncodering()
-
     bitarray_out = obj.modulation_detection(bitlist, constellatie, T, Ns, f0, alpha, Lf, N0, hch, theta)
 
     return bitarray_out
@@ -73,8 +77,5 @@ def run_moddet():
 warnings.simplefilter('ignore') # ignore warnings of integral
 
 
-#run_kwantisatie()
-#run_broncodering()
-#run_kanaalcodering()
-#run_moddet()
+run_broncodering()
 
