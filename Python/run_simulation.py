@@ -156,6 +156,6 @@ warnings.simplefilter('ignore') # ignore warnings of integral
 
 
 #run_kwantisatie()
-run_broncodering()
+#run_broncodering()
 #run_kanaalcodering()
 #run_moddet()

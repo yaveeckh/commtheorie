@@ -194,17 +194,17 @@ class Kwantisatie():
         
         # Blauwe plot
         sigmagr = np.vectorize(self.sigma_gr)
-        delta = np.linspace(0, 0.4, 100)
+        delta = np.linspace(0.012, 0.05, 100)
         y = sigmagr(delta, M, f_u)
 
         # Oranje plot
         sigmaol = np.vectorize(self.sigma_ol)
-        delta_2 = np.linspace(0, 0.4, 100)
+        delta_2 = np.linspace(0.012, 0.05, 100)
         y_2 = sigmaol(delta, M, f_u)
 
         # Groene plot
         sigma_vect = np.vectorize(self.sigma)
-        delta_3 = np.linspace(0, 0.4, 200)
+        delta_3 = np.linspace(0.012, 0.05, 200)
         y_3 = sigma_vect(delta_3, M, f_u)
 
 
