@@ -11,6 +11,20 @@ import pulse
 class ModDet():
     def __init__(self):
         pass
+
+    def modulation_detection(self, bitarray, constellatie, a, T, Ns, f0, alpha, Lf, N0, hch, theta):
+        sigma = math.sqrt(N0*Ns/2/T)
+
+        a = self.mapper(bitarray, constellatie)
+        s = self.moduleer(a, T, Ns, f0, alpha, Lf)
+        r = self.kanaal(s, sigma, hch)
+        rdemod = self.demoduleer(r, T, Ns, f0, alpha, Lf, theta)
+        rdown = self.decimatie(rdemod, Ns, Lf)
+        u = self.maak_decisie_variabele(rdown, hch, theta)
+        a_estim = self.decisie(u, constellatie)
+        bitarray_out = self.demapper(a_estim, constellatie)
+
+        return bitarray_out
     
     def mappingstabel(self, constellatie):
         tabel = []
