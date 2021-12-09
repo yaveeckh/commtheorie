@@ -105,3 +105,4 @@ def run_broncodering_6():
         data_binair_lijst.append(bit)
 
     return data_binair_lijst
+

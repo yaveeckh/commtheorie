@@ -209,7 +209,7 @@ class Broncodering():
         indx_tree = indx_reset
         for idx in range(N):
             next_index = data[idx]
-            indx_tree = boom[indx_tree-1, int(next_index)]
+            indx_tree = boom[indx_tree-1, next_index]
             if(indx_tree<=M):
                 output.append(indx_tree-1)
                 indx_tree = indx_reset
