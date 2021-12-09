@@ -111,12 +111,22 @@ class Broncodering():
        
     # functie voor het decoderen met vaste-lengte code
     def vaste_lengte_decodeer(self, data,alfabet):
-        # data :  te decoderen data (lijst?)
+        # data :  te decoderen data  (np.array)
         # alfabet : vector met alle mogelijke symbolen
         
+        data_matrix = np.reshape(data, (len(data)//6,6)) 
+        data_to_decdode = []
+        for row in data_matrix:
+            string = ''
+            for bit in row:
+                string += str(bit)
+            data_to_decdode.append(string)
+         
         # Implementeer vanaf hier
         data_gedecodeerd = []
-        for datapoint in data:
+        
+        for datapoint in data_to_decdode:
+            # datapoint = "101" -> int(101) = 5
             data_gedecodeerd.append(alfabet[int(str(datapoint), 2)])
         
         # data_gedecodeerd : gedecodeerde data
@@ -209,7 +219,7 @@ class Broncodering():
         indx_tree = indx_reset
         for idx in range(N):
             next_index = data[idx]
-            indx_tree = boom[indx_tree-1, int(next_index)]
+            indx_tree = boom[indx_tree-1, next_index]
             if(indx_tree<=M):
                 output.append(indx_tree-1)
                 indx_tree = indx_reset

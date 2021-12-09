@@ -12,7 +12,7 @@ class ModDet():
     def __init__(self):
         pass
 
-    def modulation_detection(self, bitarray, constellatie, a, T, Ns, f0, alpha, Lf, N0, hch, theta):
+    def modulation_detection(self, bitarray, constellatie, T, Ns, f0, alpha, Lf, N0, hch, theta):
         sigma = math.sqrt(N0*Ns/2/T)
 
         a = self.mapper(bitarray, constellatie)
