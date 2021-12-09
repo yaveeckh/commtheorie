@@ -114,21 +114,14 @@ class Broncodering():
         # data :  te decoderen data  (np.array)
         # alfabet : vector met alle mogelijke symbolen
         
-        data_matrix = np.reshape(data, (len(data)//6,6)) 
-        data_to_decdode = []
-        for row in data_matrix:
-            string = ''
-            for bit in row:
-                string += str(bit)
-            data_to_decdode.append(string)
-         
-        # Implementeer vanaf hier
+        data_matrix = np.reshape(data, (len(data)//np.log2(len(alfabet)),np.log2(len(alfabet))))
         data_gedecodeerd = []
-        
-        for datapoint in data_to_decdode:
-            # datapoint = "101" -> int(101) = 5
-            data_gedecodeerd.append(alfabet[int(str(datapoint), 2)])
-        
+        for row in data_matrix:
+            bitstring = ''
+            for bit in row:
+                bitstring += str(bit)
+            data_gedecodeerd.append(alfabet[int(str(bitstring), 2)])
+
         # data_gedecodeerd : gedecodeerde data
         return data_gedecodeerd
         

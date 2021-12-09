@@ -438,6 +438,5 @@ class Kanaalcodering():
 
 
 #c = obj.plot_s_1()
-# print(obj.simulation_2(0.05,20, 5))
-
+#print(obj.simulation_3(0.05,2000, 5))
 #print(obj.encodeer_inwendig([0,0,0,1,1], [1,1,1,1,0,1]))

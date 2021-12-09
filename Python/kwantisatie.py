@@ -194,26 +194,26 @@ class Kwantisatie():
         
         # Blauwe plot
         sigmagr = np.vectorize(self.sigma_gr)
-        delta = np.linspace(0, 0.4, 100)
+        delta = np.linspace(0.012, 0.03, 100)
         y = sigmagr(delta, M, f_u)
 
         # Oranje plot
         sigmaol = np.vectorize(self.sigma_ol)
-        delta_2 = np.linspace(0, 0.4, 100)
+        delta_2 = np.linspace(0.012, 0.03, 100)
         y_2 = sigmaol(delta, M, f_u)
 
         # Groene plot
         sigma_vect = np.vectorize(self.sigma)
-        delta_3 = np.linspace(0, 0.4, 200)
+        delta_3 = np.linspace(0.012, 0.03, 200)
         y_3 = sigma_vect(delta_3, M, f_u)
 
-
         if plot:
-            plt.plot(delta,y)
-            plt.plot(delta_2,y_2)
-            plt.plot(delta_3,y_3)
+            plt.plot(delta,y, label="Granulair")
+            plt.plot(delta_2,y_2, label="Overlaad")
+            plt.plot(delta_3,y_3, label="GKD")
             plt.xlabel("Delta")
             plt.ylabel("GKD")
+            plt.legend(loc="upper right")
             plt.savefig('sigma.png')
             plt.close()
 
