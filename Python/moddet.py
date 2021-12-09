@@ -199,7 +199,10 @@ class ModDet():
         pulsevector = self.pulse(t_vector, T, alpha)
        
         rdemod = Ts * np.convolve(pulsevector,rr)  
-        
+        time = np.linspace(0, T*len(r)*Ns, len(rdemod) )
+        # plt.plot(time, abs(rdemod))
+        # plt.show()
+        # plt.close()
         return rdemod
     
     # functie die de pulse aanmaakt - niet veranderen

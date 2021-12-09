@@ -1,4 +1,4 @@
-from numpy.lib.index_tricks import IndexExpression
+from numpy.lib.index_tricks import IndexExpression, MGridClass
 from kwantisatie import Kwantisatie
 from broncodering import Broncodering
 from kanaalcodering import Kanaalcodering
@@ -64,7 +64,7 @@ def run_moddet():
     theta = math.pi / 16
 
     obj = ModDet()
-    bitstring = bin(random.randint(0,2**1000))[2:].zfill(1000)
+    bitstring = bin(random.randint(0,2**20))[2:].zfill(20)
     bitvector_in = []
     for bit in bitstring:
         bitvector_in.append(int(bit))
@@ -73,7 +73,7 @@ def run_moddet():
     else:
         slice = -1
     
-    ######### PLOT |P(f)| ##########
+    ######### PLOT |P(f)| #########
     
     def plot_puls(alhpa, filename):
         t_theorie = np.linspace(-1000*Lf*T, 1000*Lf*T, 2*Lf*Ns*1000 + 1)
@@ -86,19 +86,60 @@ def run_moddet():
         theorie_fourier = fft(theorie)*T/Ns
         theorie_x = fftfreq(2*1000*Lf*Ns +1, d=T/Ns)
 
-        plt.plot(afgeknot_x, np.abs(afgeknot_fourier))
-        plt.plot(theorie_x, np.abs(theorie_fourier))
-        
+        #plt.plot(afgeknot_x, np.abs(afgeknot_fourier), label = "afgeknot")
+        plt.semilogy(afgeknot_x, np.abs(afgeknot_fourier), label = "afgeknot")
+        #plt.plot(theorie_x, np.abs(theorie_fourier), label = "theoretisch")
+        plt.semilogy(theorie_x, np.abs(theorie_fourier), label = "theoretisch")
+        plt.legend()
+        plt.xlabel('frequentie [Hz]')
+        plt.ylabel('|P(f)|')
+        plt.ylim((10**(-7), 5*10**(-3)))
         plt.savefig(filename)
         plt.close()
         return
 
+    # plot_puls(0.05, "moddet/puls/alpha_05.png")
+    # plot_puls(0.5, "moddet/puls/alpha_50.png")
+    # plot_puls(0.95, "moddet/puls/alpha_95.png")
 
-    # plot_puls(0.05)
-    # plot_puls(0.5)
-    plot_puls(0.95, "moddet/puls/alpha_95.png")
-    return
+    ######### PLOT BER #########
+    def plot_ber(constellatie, L):
+        tabel = obj.mappingstabel(constellatie)
+        mc = math.log2(len(tabel))
+        Eb = 1/mc
+        N0_list = [i*0.005 + 0.0001 for i in range(100)]
+        N = 100 #aantal steekproeven
+
+        #bitvector met lengte L
+        bitstring = bin(random.randint(0,2**L))[2:].zfill(L)
+        bitvector_in = []
+        for bit in bitstring:
+            bitvector_in.append(int(bit))
+
+        BER_mx = np.reshape(np.zeros(len(N0_list)*N), (len(N0_list), N))
+        for i in range(0,len(N0_list)):
+            for j in range(0,100):
+                N0 = N0_list[i]
+                bitvector_out = obj.modulation_detection(bitvector_in, constellatie, T, Ns, f0, alpha, Lf, N0, hch, theta)
+                aantal_fout = sum(abs(np.array(bitvector_out)-np.array(bitvector_in)))
+                BER_mx[i,j] = aantal_fout/L
+        BER = np.mean(BER_mx, 1)
+        x = 10*np.log10(np.ones(len(N0_list))*Eb/N0_list)
+        plt.semilogy(x, BER)
+        plt.ylim((10**(-4), 10**(-1)))
+        plt.xlim((0,14))
+        plt.xlabel('Eb/N0 [dB]')
+        plt.ylabel('BER')
+        plt.axvline(1.33, 0, 0.05, color = 'k', lw = 0.5)
+        plt.hlines(0.05, 0, 1.33, color = 'k', lw =0.5)
+        plt.plot([1.33], [0.05], marker='o', markersize=3, color="red")
+        plt.savefig('moddet/BER/BPSK.png')
+        plt.close()
+        return
     
+    plot_ber('BPSK', 1000)
+    return
+
     print('TESTING MODDET:')
     print('---------------')
     print("BPSK: ")
@@ -112,6 +153,8 @@ def run_moddet():
     bitvector_out = obj.demapper(a_estim, 'BPSK')
     if bitvector_in == bitvector_out: print('OK') 
     else: print('NOT OK')
+
+    return
 
     print('4QAM: ')
     a = obj.mapper(bitvector_in, '4QAM')
@@ -156,6 +199,6 @@ warnings.simplefilter('ignore') # ignore warnings of integral
 
 
 #run_kwantisatie()
-run_broncodering()
+#run_broncodering()
 #run_kanaalcodering()
-#run_moddet()
+run_moddet()
