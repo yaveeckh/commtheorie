@@ -128,7 +128,7 @@ class ModDet():
         return np.array(a_estim)
     
     # funcie die de decisie variabele aanmaakt
-    def maak_decisie_variabele(self,rdown,hch_hat,theta_hat, scatterplot = 0, filename = ''):
+    def maak_decisie_variabele(self,rdown,hch_hat,theta_hat):
         # rdown : vector met het gedecimeerde ontvangen signaal
         # hch_hat : schatting van amplitude van het kanaal
         # theta_hat : schatting van fase van de demodulator
@@ -136,13 +136,6 @@ class ModDet():
         # Implementeer vanaf hier
         u = rdown/hch_hat*np.exp(1j*theta_hat)
 
-        if scatterplot:
-            u_real =  [e.real for e in u]
-            u_complex = [e.imag for e in u]
-            plt.scatter(u_real, u_complex, marker=".")
-            plt.savefig(filename, dpi=300)
-            plt.close()
-                
         # u : vector met decisie-variabele
         return u
     
@@ -198,11 +191,7 @@ class ModDet():
         t_vector = np.linspace(-Lf*T, Lf*T, 2*Lf*Ns + 1)
         pulsevector = self.pulse(t_vector, T, alpha)
        
-        rdemod = Ts * np.convolve(pulsevector,rr)  
-        time = np.linspace(0, T*len(r)*Ns, len(rdemod) )
-        # plt.plot(time, abs(rdemod))
-        # plt.show()
-        # plt.close()
+        rdemod = Ts * np.convolve(pulsevector,rr) 
         return rdemod
     
     # functie die de pulse aanmaakt - niet veranderen
