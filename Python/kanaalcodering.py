@@ -492,7 +492,7 @@ class Kanaalcodering():
 # b = Kanaalcodering.decodeer_uitwendig(a)
 # print(b)
 
-obj = Kanaalcodering()
+#obj = Kanaalcodering()
 # data_binair =  ['11', '10', '01', '00', '10', '01', '01', '00', '00', '00']
 # a =  obj.kanaalencodering_1(data_binair)
 # print(a)
@@ -503,4 +503,4 @@ obj = Kanaalcodering()
 
 
 #c = obj.plot_s_1()
-c = obj.plot_s_2()
+#c = obj.plot_s_2()

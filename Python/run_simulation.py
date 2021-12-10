@@ -18,14 +18,35 @@ from playsound import playsound
 def run_kwantisatie():
     obj = Kwantisatie(0)
 
+    
+    print('Generating plot: optimal SQR in function of alpha..')
+    alpha = np.array([i for i in range(2,9)])
+    y = np.array([obj.bepaal_optimale_lineaire_kwantisator(2**i)[2] for i in range(2,9)])
+    y2 = np.array([obj.bepaal_compansie_kwantisator(2**i)[1] for i in range(2,9)])
+    y3 = np.array([obj.bepaal_Lloyd_Max_kwantisator(2**i)[1] for i in range(2,7)])
+    winst = [0 for _ in range(0,6)] 
+    for i in range(0,6):
+        winst[i] = y[i+1] - y[i]
+    print(winst)
+    plt.plot(alpha, y)
+    plt.plot(alpha, y2)
+    plt.plot(alpha[:5], y3)
+    plt.xlabel("Alpha")
+    plt.ylabel("SQR [dB]")
+    plt.savefig('SQR.png')
+    plt.close()
+    print('Done!')
+    
+
+    return 1
     # Lloyd-Max KWANTISATOR
 
-    opt_kwant = obj.bepaal_Lloyd_Max_kwantisator(2**6)
-    r_opt = opt_kwant[3]
-    q_opt = opt_kwant[4]
-    gekwantiseerd_opt = obj.kwantiseer(r_opt, q_opt)
+    # opt_kwant = obj.bepaal_Lloyd_Max_kwantisator(2**6)
+    # r_opt = opt_kwant[3]
+    # q_opt = opt_kwant[4]
+    # gekwantiseerd_opt = obj.kwantiseer(r_opt, q_opt)
     
-    return (r_opt,q_opt,gekwantiseerd_opt)
+    # return (r_opt,q_opt,gekwantiseerd_opt)
 
     
 def run_broncodering():
@@ -160,7 +181,7 @@ def run_moddet():
 warnings.simplefilter('ignore') # ignore warnings of integral
 
 
-#run_kwantisatie()
+run_kwantisatie()
 #run_broncodering()
 #run_kanaalcodering()
-run_moddet()
+#run_moddet()
