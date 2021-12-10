@@ -123,7 +123,6 @@ class Kanaalcodering():
         # Implementeer vanaf hier
         #print(bitstring)
         b_shifted = np.append(bitstring, np.array([0] * (len(g_x) - 1)))
-        print(b_shifted)
         # print(shift)
         # b_shifted = np.mod(np.polymul(bitstring, shift),2)
         #print(b_shifted)
@@ -384,7 +383,6 @@ class Kanaalcodering():
     
     def kanaalencodering_2(self, bit_vec, g_x):
         crc = np.array([self.encodeer_inwendig(group, g_x) for group in bit_vec])
-        print(crc)
         blk = np.array([self.encodeer_uitwendig(group) for group in crc])
         return blk
     
