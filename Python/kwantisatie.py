@@ -307,7 +307,8 @@ class Kwantisatie():
 
         #SQR
         mean = integrate.quad(lambda u: u*f_u(u), -np.Inf, np.Inf)[0]
-        SQR = (integrate.quad(lambda u: (u**2) * f_u(u), -np.Inf, np.Inf)[0] - mean**2)/GKD_min
+        SQR_0 = (integrate.quad(lambda u: (u**2) * f_u(u), -np.Inf, np.Inf)[0] - mean**2)/GKD_min
+        SQR = 10 * np.log10(SQR_0)
 
         #plots
         if(plot):

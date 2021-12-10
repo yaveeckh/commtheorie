@@ -246,11 +246,13 @@ class Kanaalcodering():
     def simulation_2(self, p, n = 1000000 ,T_max = 2, g_x=[1,1,0,1,0,1]):
         T = 0
 
+        N = 0
+
         rand = np.random.randint(0,2, n)
         rand_grouped = np.resize(rand, (int(len(rand)/5),5))
 
         encoded = self.kanaalencodering_2(rand_grouped, g_x)
-
+        N += len(encoded.flatten())
         #Simuleer kanaal door bits te veranderen
         encoded_ch = self.kanaal_simulatie(encoded,p)
 
@@ -271,9 +273,9 @@ class Kanaalcodering():
                 print(f'---Retransmissie {T}---')
                 
                 #Retransmit
-                retrans_pack = [encoded[i] for i in decoded_fouten]
+                retrans_pack = np.array([encoded[i] for i in decoded_fouten])
                 retransmitted = self.kanaal_simulatie(retrans_pack,p)
-
+                N += len(retrans_pack.flatten())
                 #Decode
                 d = self.kanaaldecodering_2(retransmitted, g_x)
                 decoded_retransmitted = d[0]
@@ -294,18 +296,28 @@ class Kanaalcodering():
                     for i in to_remove: decoded_fouten.remove(i)
                     
                     T += 1
+            
 
         fout = False if np.all(rand_grouped == decoded_corrected) else True
         print(fout)
 
+        fouten = 0
+        for idx,i in enumerate(rand_grouped):
+            if np.any(rand_grouped[idx] != decoded_corrected[idx]):
+                fouten += 1
+        pe = fouten/(n/5)
+
+        return pe, N
+
+
     def simulation_3(self, p, n = 1000000 ,T_max = 2, g_x=[1,1,0,0,1,1,0,1,1]):
         T = 0
-
+        N = 0
         rand = np.random.randint(0,2, n)
         rand_grouped = np.resize(rand, (int(len(rand)/2),2))
         #print(rand_grouped)
         encoded = self.kanaalencodering_2(rand_grouped, g_x)
-
+        N += len(encoded.flatten())
         #Simuleer kanaal door bits te veranderen
         encoded_ch = self.kanaal_simulatie(encoded,p)
 
@@ -326,9 +338,9 @@ class Kanaalcodering():
                 print(f'---Retransmissie {T}---')
                 
                 #Retransmit
-                retrans_pack = [encoded[i] for i in decoded_fouten]
+                retrans_pack = np.array([encoded[i] for i in decoded_fouten])
                 retransmitted = self.kanaal_simulatie(retrans_pack,p)
-
+                N += len(retrans_pack.flatten())
                 #Decode
                 d = self.kanaaldecodering_2(retransmitted, g_x)
                 decoded_retransmitted = d[0]
@@ -358,19 +370,19 @@ class Kanaalcodering():
         #     if np.any(rand_grouped[idx] != decoded_corrected[idx]):
         #         fouten += 1
         
-        # print(rand_grouped)
-        # print(encoded)
-        # print(decoded)
-        #pe = fouten/(n/5) if fouten!= 0 else 0
-        #print(decoded_corrected)
-        return
+        fouten = 0
+        for idx,i in enumerate(rand_grouped):
+            if np.any(rand_grouped[idx] != decoded_corrected[idx]):
+                fouten += 1
+        pe = fouten/(n/2)
+        return 
 
     def plot_s_1(self):
         pe = []
         T = range(16)
+
         for t_max in range(16):
             pe.append(self.simulation_1(0.05, n=1000000, T_max=t_max ))
-        
         plt.plot(pe)
         plt.yscale("log")
         plt.ylabel("p_e")
@@ -380,6 +392,61 @@ class Kanaalcodering():
 
 
         print(pe)
+
+    def plot_s_2(self):
+        pe = []
+        N = []
+        T = range(6)
+
+        for t_max in range(6):
+            sim = self.simulation_2(0.05, n=1000000, T_max=t_max )
+            pe.append(sim[0])
+            N.append(sim[1]/1000000)
+
+        plt.plot(pe)
+        plt.yscale("log")
+        plt.ylabel("p_e")
+        plt.xlabel("T")
+        plt.savefig("p_e_2.png")
+        plt.close()
+
+        plt.plot(N)
+        plt.yscale("log")
+        plt.ylabel("N")
+        plt.xlabel("T")
+        plt.savefig("N_2.png")
+        plt.close()
+
+        print(pe)
+        print(N)
+
+    def plot_s_3(self):
+        pe = []
+        N = []
+        T = range(6)
+
+        for t_max in range(6):
+            sim = self.simulation_3(0.05, n=1000000, T_max=t_max )
+            pe.append(sim[0])
+            N.append(sim[1]/1000000)
+
+        plt.plot(pe)
+        plt.yscale("log")
+        plt.ylabel("p_e")
+        plt.xlabel("T")
+        plt.savefig("p_e_3.png")
+        plt.close()
+
+        plt.plot(N)
+        plt.yscale("log")
+        plt.ylabel("N")
+        plt.xlabel("T")
+        plt.savefig("N_3.png")
+        plt.close()
+
+        print(pe)
+        print(N)
+    
     
     def kanaalencodering_2(self, bit_vec, g_x):
         crc = np.array([self.encodeer_inwendig(group, g_x) for group in bit_vec])
@@ -425,7 +492,7 @@ class Kanaalcodering():
 # b = Kanaalcodering.decodeer_uitwendig(a)
 # print(b)
 
-#obj = Kanaalcodering()
+obj = Kanaalcodering()
 # data_binair =  ['11', '10', '01', '00', '10', '01', '01', '00', '00', '00']
 # a =  obj.kanaalencodering_1(data_binair)
 # print(a)
@@ -436,5 +503,4 @@ class Kanaalcodering():
 
 
 #c = obj.plot_s_1()
-#print(obj.simulation_3(0.05,2000, 5))
-#print(obj.encodeer_inwendig([0,0,0,1,1], [1,1,1,1,0,1]))
+c = obj.plot_s_2()
