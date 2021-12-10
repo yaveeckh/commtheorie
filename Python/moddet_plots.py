@@ -193,7 +193,53 @@ def plot_epsilon_scatter(constellatie, epsilon, filename):
     plt.close()
     return
 
+def plot_epsilon_BER(constellatie):
+    def plot_ber(constellatie, L, epsilon):
+
+        tabel = obj.mappingstabel(constellatie)
+        mc = math.log2(len(tabel))
+        Eb = 1/mc
+        N0_list = [i*0.005 + 0.0001 for i in range(200)]
+        N = 100 #aantal steekproeven
+
+        #bitvector met lengte L
+        bitstring = bin(random.randint(0,2**L))[2:].zfill(L)
+        bitvector_in = []
+        for bit in bitstring:
+            bitvector_in.append(int(bit))
+
+        BER_mx = np.reshape(np.zeros(len(N0_list)*N), (len(N0_list), N))
+        for i in range(0,len(N0_list)):
+            for j in range(0,100):
+                N0 = N0_list[i]
+                bitvector_out = obj.modulation_detection(bitvector_in, constellatie, T, Ns, f0, alpha, Lf, N0, hch, theta, epsilon, 0)
+                aantal_fout = sum(abs(np.array(bitvector_out)-np.array(bitvector_in)))
+                BER_mx[i,j] = aantal_fout/L
+        BER = np.mean(BER_mx, 1)
+        x = 10*np.log10(np.ones(len(N0_list))*Eb/N0_list)
+        lbl = 'epsilon = ' + str(epsilon)
+        plt.semilogy(x, BER, label = lbl)
+        return
+
+    plot_ber(constellatie, 1000, 0.0)
+    plot_ber(constellatie, 1000, 0.1)
+    plot_ber(constellatie, 1000, 0.2)
+
+    plt.ylim((10**(-4), 10**(-1)))
+    plt.xlim((0,14))
+    plt.xlabel('Eb/N0 [dB]')
+    plt.ylabel('BER')
+    plt.legend()
+    flnm = 'moddet/BER/BER_epsilon_' + constellatie
+    plt.savefig(flnm)
+    plt.close()
+
+    return
+
+######### PLOT FASESCHATTINGSFOUT BPSK #########
+
 def plot_phi_scatter(constellatie, phi, filename):
+
     theta_hat = theta + phi
     bitstring = bin(random.randint(0,2**500))[2:].zfill(500)
     bitvector_in = []
@@ -217,6 +263,55 @@ def plot_phi_scatter(constellatie, phi, filename):
     
     return
 
+def plot_phi_BER(constellatie):
+    def plot_ber(constellatie, L, phi):
+        tabel = obj.mappingstabel(constellatie)
+        mc = math.log2(len(tabel))
+        Eb = 1/mc
+        N0_list = [i*0.005 + 0.0001 for i in range(200)]
+        N = 100 #aantal steekproeven
+
+        #bitvector met lengte L
+        bitstring = bin(random.randint(0,2**L))[2:].zfill(L)
+        bitvector_in = []
+        for bit in bitstring:
+            bitvector_in.append(int(bit))
+
+        BER_mx = np.reshape(np.zeros(len(N0_list)*N), (len(N0_list), N))
+        for i in range(0,len(N0_list)):
+            for j in range(0,100):
+                N0 = N0_list[i]
+                bitvector_out = obj.modulation_detection(bitvector_in, constellatie, T, Ns, f0, alpha, Lf, N0, hch, theta, 0, phi)
+                aantal_fout = sum(abs(np.array(bitvector_out)-np.array(bitvector_in)))
+                BER_mx[i,j] = aantal_fout/L
+        BER = np.mean(BER_mx, 1)
+        x = 10*np.log10(np.ones(len(N0_list))*Eb/N0_list)
+        if phi == 0: phi_txt = '0'
+        elif abs(phi - math.pi/16) < 0.0001:
+            phi_txt = 'pi/16'
+        elif abs(phi - math.pi/8) <0.0001:
+            phi_txt = 'pi/8'
+        elif abs(phi - math.pi/4) <0.0001:
+            phi_txt = 'pi/4'
+        lbl = 'phi = ' + phi_txt
+        plt.semilogy(x, BER, label = lbl)
+        return
+
+    plot_ber(constellatie, 1000, 0)
+    plot_ber(constellatie, 1000, math.pi/16)
+    plot_ber(constellatie, 1000, math.pi/8)
+    plot_ber(constellatie, 1000, math.pi/4)
+
+    plt.ylim((10**(-4), 5*10**(-1)))
+    plt.xlim((0,14))
+    plt.xlabel('Eb/N0 [dB]')
+    plt.ylabel('BER')
+    plt.legend()
+    flnm = 'moddet/BER/BER_phi_' + constellatie
+    plt.savefig(flnm)
+    plt.close()
+    return
+
 # plot_BER_037()
 # plot_BER_alle3()
 # plot_scatter_4QAM(0.000, 'moddet/scatter/4QAM_000.png')
@@ -227,3 +322,7 @@ def plot_phi_scatter(constellatie, phi, filename):
 # plot_epsilon_scatter('4PAM', 0.1, 'moddet/scatter/4PAM_epsilon.png')
 # plot_epsilon_scatter('4QAM', 0.1, 'moddet/scatter/4QAM_epsilon.png')
 # plot_phi_scatter('4QAM', math.pi/16, 'moddet/scatter/4QAM_phi.png')
+# plot_phi_BER('4QAM')
+# plot_epsilon_BER('BPSK')
+# plot_epsilon_BER('4PAM')
+

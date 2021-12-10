@@ -159,7 +159,7 @@ def run_kanaalcodering(bitlist):
     # print(encoded_ch)
     # print(decoded_corrected)
 
-    return (decoded_corrected, M)
+    return (decoded_corrected.flatten(), M)
 
 
 def run_moddet(bitlist):
@@ -186,4 +186,4 @@ warnings.simplefilter('ignore') # ignore warnings of integral
 
 # rand = np.random.randint(0,2, 100000)
 # run_kanaalcodering(rand)
-run_broncodering
+print(run_broncodering())
