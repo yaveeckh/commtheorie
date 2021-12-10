@@ -1,4 +1,3 @@
-from os import R_OK
 from numpy.lib.index_tricks import IndexExpression
 from kwantisatie import Kwantisatie
 from broncodering import Broncodering
@@ -83,7 +82,7 @@ def run_broncodering():
 
     print('Macro -> Bron')
     data_decoded = [alfabet_scalair[sym - 1] for sym in data_macro]
-    obj_2.save_and_play_music(np.array(data_decoded), "Configuratie_4.wav", 0)
+    obj_2.save_and_play_music(np.array(data_decoded), "Configuratie_3.wav", 0)
 
     GKA = 0
     for i in range(len(data_decoded)):
@@ -97,64 +96,17 @@ def run_kanaalcodering(bitlist):
     bitlist_2 = bitlist[:-(len(bitlist)%10)]
     bitlist_grouped = np.reshape(bitlist_2, (len(bitlist_2)//10, 10))
     
-    M = 0
-
     print("Kanaal codering")
-    encoded = obj.kanaalencodering_1(bitlist_grouped)
+    bits_encoded = obj.kanaalencodering_1(bitlist_grouped)
+
+    bitlist_moddet = run_moddet(bits_encoded.flatten())
+
+    bitlist_moddet_grouped = np.reshape(bitlist_moddet, (len(bitlist_moddet)//14, 14))
     
-    bitlist_moddet = run_moddet(encoded.flatten())
-    M += len(bitlist_moddet)
+    print("kanaal decodering")
+    bits_decoded = obj.kanaaldecodering_1(bitlist_moddet_grouped)[0]
 
-    encoded_ch = np.reshape(bitlist_moddet, (len(bitlist_moddet)//14, 14))
-
-    T = 0
-    T_max = 8
-
-    decoded = obj.kanaaldecodering_1(encoded_ch, True)
-    decoded_bits = decoded[0]
-    decoded_corrected = copy.deepcopy(decoded[0])
-    decoded_fouten = decoded[1]
-    
-    print("Decoded")
-    if(decoded_fouten != []):
-        
-        while(T < T_max and len(decoded_fouten) > 0):
-            ARQ = False if T == T_max-1 else True 
-            print(f'---Retransmissie {T}---')
-            retrans_pack = np.array([encoded[i] for i in decoded_fouten])
-            
-            r_moddet = run_moddet(retrans_pack.flatten())
-            M += len(retrans_pack.flatten())
-            retransmitted = np.reshape(r_moddet, (len(r_moddet)//14, 14))
-
-            d = obj.kanaaldecodering_1(retransmitted, ARQ=True)
-            decoded_retransmitted = d[0]
-            fouten_retransmitted = d[1]
-            nieuwe_fouten = [decoded_fouten[i] for i in fouten_retransmitted]
-            # print(f'oude fouten: {decoded_fouten}')
-            # print(f'nieuwe fouten: {nieuwe_fouten}')
-                
-            if T < T_max-1:
-                to_remove = []
-                for index, row in enumerate(decoded_fouten):
-                    if row not in nieuwe_fouten:
-                        #print(f'{row}, {decoded_retransmitted[index]}, {bitlist_grouped[row]}')
-                        decoded_corrected[row] = decoded_retransmitted[index]
-                        to_remove.append(row)
-                
-                for i in to_remove: decoded_fouten.remove(i)
-                
-                T += 1
-            else:
-                #print("Volledige decodering!")
-
-                for i, row in enumerate(decoded_fouten):
-                    decoded_corrected[row] = decoded_retransmitted[i]
-                T += 1
-            print("--------")
-
-
-    return (decoded_corrected.flatten(), M)
+    return (bits_decoded.flatten().tolist(), len(bits_encoded.flatten()))
 
 
 def run_moddet(bitlist):

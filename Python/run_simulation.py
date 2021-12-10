@@ -30,23 +30,53 @@ def run_kwantisatie():
 def run_broncodering():
     obj = Broncodering()
     
-    print('Kwantisatie\n')
-    r, q, bronsymbolen = run_kwantisatie()
-    r = r.tolist()
-    q = q.tolist()
+    # Bron -> Macro
+    alfabet_scalair = ['5','8']
+    stream = '5555555558585885858588888'
+    print(stream)
+    bronsymbolen = []
+    for symbol in stream:
+        bronsymbolen.append(symbol)
+    bronsymbolen_vast = copy.deepcopy(bronsymbolen)
+    rel_freq = [0 for _ in range(len(alfabet_scalair))]
+    aantal_symbolen = 0
+    while len(bronsymbolen) > 1:
+        aantal_symbolen += 1
+        index = alfabet_scalair.index(bronsymbolen[0])
+        rel_freq[index] += 1
+        del bronsymbolen[0]
+    
+    for index, element in enumerate(rel_freq):
+        rel_freq[index] = element / aantal_symbolen
+    print(rel_freq)
+    index_lijst = [i + 1 for i in range(len(alfabet_scalair))]
+    dictionary, gem_len, codetabel = obj.maak_codetabel_Huffman(rel_freq, index_lijst)
+    print('dictionary = ', dictionary)
+    print('codetabel = ',codetabel)
 
-    print('Vaste-lengte\n')
-    data_encoded = obj.vaste_lengte_encodeer(bronsymbolen, q)
-    data_encoded_str = ''
-    for bitstring in data_encoded:
-        for bit in bitstring:
-            data_encoded_str += bit
 
-    data_encoded_lijst = []
-    for bit in data_encoded_str:
-        data_encoded_lijst.append(bit)
+    print('Huffman_encodeer\n')
+    print(bronsymbolen_vast)
+    bronsym = [int(sym) for sym in bronsymbolen_vast]
+    macrosymbolen = [alfabet_scalair.index(str(sym)) + 1 for sym in bronsym]
 
-    return data_encoded_lijst
+    data_binair = obj.Huffman_encodeer(np.array(macrosymbolen), dictionary)
+    data_binair_str = ''
+    for datapoint in data_binair:
+        data_binair_str += str(datapoint)
+    print('data_binair = ', data_binair)
+    data_binair_lijst = []
+    for bit in data_binair_str:
+        data_binair_lijst.append(int(bit))
+    
+    print('Binair -> macro')
+    data_macro = obj.Huffman_decodeer(data_binair_lijst, np.array(codetabel), np.array(index_lijst))
+    print('data_macro = ', data_macro)
+
+    data_decoded = [alfabet_scalair[sym -1] for sym in data_macro]
+    print(data_decoded)
+    
+    return 1
 
 def run_kanaalcodering():
     return 1
@@ -156,6 +186,6 @@ warnings.simplefilter('ignore') # ignore warnings of integral
 
 
 #run_kwantisatie()
-#run_broncodering()
+run_broncodering()
 #run_kanaalcodering()
 #run_moddet()

@@ -49,10 +49,13 @@ def run_broncodering():
 
     bitlist_moddet = run_moddet(data_encoded_lijst)
     data_decoded = obj.vaste_lengte_decodeer(bitlist_moddet, q)
+    obj_2.save_and_play_music(np.array(data_decoded), "Configuratie_1.wav", 0)
 
-    obj_2.save_and_play_music(np.array(data_decoded), "Configuratie_1.wav", 1)
-
-    return data_decoded
+    GKA = 0
+    for i in range(len(data_decoded)):
+        GKA += (bronsymbolen[i] - data_decoded[i])**2
+    GKA /= len(data_decoded)
+    return int(np.log2(len(q))), GKA
 
 
 def run_moddet(bitlist):
@@ -65,7 +68,7 @@ def run_moddet(bitlist):
     f0 = 2*10**6
     alpha = 0.5
     Lf = 10
-    N0 = 0.7
+    N0 = 0.37
     sigma = math.sqrt(N0*Ns/2/T)
     hch = 1
     theta = math.pi / 16
@@ -77,5 +80,5 @@ def run_moddet(bitlist):
 warnings.simplefilter('ignore') # ignore warnings of integral
 
 
-run_broncodering()
+print(run_broncodering())
 

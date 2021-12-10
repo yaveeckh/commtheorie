@@ -47,12 +47,15 @@ def run_broncodering():
     for bit in data_encoded_str:
         data_encoded_lijst.append(int(bit))
 
-    bitlist_moddet = run_kanaalcodering(data_encoded_lijst)
-    data_decoded = obj.vaste_lengte_decodeer(bitlist_moddet, q)
+    bitlist_kanaal, M = run_kanaalcodering(data_encoded_lijst)
+    data_decoded = obj.vaste_lengte_decodeer(bitlist_kanaal, q)
+    obj_2.save_and_play_music(np.array(data_decoded), "Configuratie_2.wav", 0)
 
-    obj_2.save_and_play_music(np.array(data_decoded), "Configuratie_2.wav", 1)
-
-    return data_decoded
+    GKA = 0
+    for i in range(len(data_decoded)):
+        GKA += (bronsymbolen[i] - data_decoded[i])**2
+    GKA /= len(data_decoded)
+    return M/len(bronsymbolen), GKA
 
 def run_kanaalcodering(bitlist): 
     obj = Kanaalcodering()
@@ -68,7 +71,7 @@ def run_kanaalcodering(bitlist):
     print("kanaal decodering")
     bits_decoded = obj.kanaaldecodering_1(bitlist_moddet_grouped)[0]
 
-    return bits_decoded.flatten()
+    return (bits_decoded.flatten(), len(bits_encoded.flatten()))
 
 
 def run_moddet(bitlist):
@@ -81,7 +84,7 @@ def run_moddet(bitlist):
     f0 = 2*10**6
     alpha = 0.5
     Lf = 10
-    N0 = 0.7
+    N0 = 0.37
     sigma = math.sqrt(N0*Ns/2/T)
     hch = 1
     theta = math.pi / 16
@@ -93,5 +96,5 @@ def run_moddet(bitlist):
 warnings.simplefilter('ignore') # ignore warnings of integral
 
 
-run_broncodering()
+print(run_broncodering())
 
