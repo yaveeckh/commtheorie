@@ -1,7 +1,4 @@
 from numpy.lib.index_tricks import IndexExpression, MGridClass
-from kwantisatie import Kwantisatie
-from broncodering import Broncodering
-from kanaalcodering import Kanaalcodering
 from moddet import ModDet
 import numpy as np
 import matplotlib.pyplot as plt
@@ -360,10 +357,10 @@ def plot_all_eyediagrams():
         
         r_oog = rdemod[2*Lf*Ns:-2*Lf*Ns + 1].real
         t = np.arange(0,len(r_oog),1)*T/Ns + 2*Lf*T
-        
-        
-
-
+        plt.plot(t, r_oog)
+        plt.show()
+        plt.close()
+    
         return
 
     plot_eye('BPSK', 0.5)
@@ -386,5 +383,5 @@ def plot_all_eyediagrams():
 # plot_epsilon_BER('4PAM')
 
 # plot_demod()
-# plot_all_eyediagrams()
+plot_all_eyediagrams()
 
