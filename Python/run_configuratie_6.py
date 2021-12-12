@@ -124,22 +124,21 @@ def run_kanaalcodering(bitlist):
             retransmitted = np.reshape(r_moddet, (len(r_moddet)//14, 14))
 
             #Decode
-            d = obj.kanaaldecodering_2(retransmitted, g_x)
-            decoded_retransmitted = d[0]
-            fouten_retransmitted = d[1]
+            r_decoded = obj.kanaaldecodering_2(retransmitted, g_x)
+            r_bits = r_decoded[0]
+            r_fouten = r_decoded[1]
 
-            nieuwe_fouten = [decoded_fouten[i] for i in fouten_retransmitted]
+            nieuwe_fouten = [decoded_fouten[i] for i in r_fouten]
 
-            if T < T_max:
-                to_remove = []
-                for index, row in enumerate(decoded_fouten):
-                    if row not in nieuwe_fouten:
-                        decoded_corrected[row] = decoded_retransmitted[index]
-                        to_remove.append(row)
-                
-                for i in to_remove: decoded_fouten.remove(i)
-                
-                T += 1
+            to_remove = []
+            for index, row in enumerate(decoded_fouten):
+                if row not in nieuwe_fouten:
+                    decoded_corrected[row] = r_bits[index]
+                    to_remove.append(row)
+            
+            for i in to_remove: decoded_fouten.remove(i)
+            
+            T += 1
 
     return (decoded_corrected.flatten(), M)
 

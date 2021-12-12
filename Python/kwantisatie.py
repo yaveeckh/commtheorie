@@ -250,7 +250,7 @@ class Kwantisatie():
 
         return (delta_opt,GKD_min,SQR,entropie,r_opt,q_opt,p_opt)
 
-    def bepaal_Lloyd_Max_kwantisator(self,M, plot = True, epsilon = 0.0005):
+    def bepaal_Lloyd_Max_kwantisator(self,M, plot = 0, epsilon = 0.0005):
         # M : aantal reconstructieniveaus
         
         f_u = self.f_u # w.d.f. - anonieme functie
