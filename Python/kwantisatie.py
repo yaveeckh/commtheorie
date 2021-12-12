@@ -249,82 +249,112 @@ class Kwantisatie():
             entropie += -p_opt[i]*np.log2(p_opt[i])
 
         return (delta_opt,GKD_min,SQR,entropie,r_opt,q_opt,p_opt)
-        
-        
-    # functie om Lloyd-Max kwantisator te bepalen
-    def bepaal_Lloyd_Max_kwantisator(self,M, plot = False):
+
+    def bepaal_Lloyd_Max_kwantisator(self,M, plot = True, epsilon = 0.0005):
         # M : aantal reconstructieniveaus
         
         f_u = self.f_u # w.d.f. - anonieme functie
+        data = self.data
         
-        # Implementeer vanaf hier
-        
-        #Eerst bepalen we de initiële q_i's
-        q = np.arange(-1, 1, 2 / M)
+        #Iterator voor de plots
+        it = 1
 
-        #r waarde initialiseren
+        #Initialiseren van r
         r = np.zeros(M+1)
         r[0] = -1
         r[M] = 1
 
-        #Initialiseren van gkd's
-        sigma_0 = 1
-        sigma_1 = 1
-
-        #Functies
-        teller = lambda i : integrate.quad(lambda u: u*f_u(u), r[i], r[i+1])[0]
-        noemer = lambda i : integrate.quad(lambda u: f_u(u), r[i], r[i+1])[0]
-        update_q_f = lambda i: teller(i)/noemer(i)
-
-        sigma_f = lambda i : integrate.quad(lambda u: pow(q[i]-u, 2) * f_u(u), r[i], r[i+1])[0]
-
-        p_f = lambda i: integrate.quad(lambda u: f_u(u), r[i-1], r[i])[0]
-
-        gkd = []
-        ent = []
+        #Initialiseren van q
+        q = np.linspace(np.min(data), np.max(data), M)
+        r[1:M] = (q[0:M-1] + q[1:M])/2
         
-        #Iteratieve stappen
-        while((sigma_1-sigma_0)/sigma_0 >= 0.0001 or len(gkd) <= 2):
-            for i in range(1, M):
-                r[i] = (q[i-1] + q[i])/2
-            q = np.array([update_q_f(i) for i in range(M)])
+        #Hulp functies
+        sigma_f = lambda i : integrate.quad(lambda u: pow(q[i]-u, 2) * f_u(u), r[i], r[i+1])[0]
+        update_q = lambda i : integrate.quad(lambda u: f_u(u)*u, r[i], r[i+1])[0] / integrate.quad(f_u, r[i], r[i+1])[0]
+        p_f = lambda i : integrate.quad(f_u, r[i], r[i+1])[0]
+        
+        #Eerste GKD en entropie berekenen
+        ent_list = []
+        p = np.array([p_f(i) for i in range(M)])
+        entropie = np.sum(-p*np.log2(p))
+        ent_list.append(entropie)
 
-            #GKD recalculatie
+        GKD = []
+        sigma_1 = sum([sigma_f(i) for i in range(M)])
+        GKD += [sigma_1]
+        
+        #Delta op 1 zetten zodat eerste iteratie zeker doorgaat
+        delta = 1
+        # Iteratieve stappen
+        while delta >= epsilon:
+            #Recalculate van r
+            r[1:M] = (q[0:M-1] + q[1:M])/2
+            
+            #Updaten van q waarden
+            for i in range(0, M): q[i] = update_q(i)
+            
+            #GKD's bijwerken en in lijst plaatsen
             sigma_0 = sigma_1
-            sigma_1 = sum(sigma_f(i) for i in range(M))
-            gkd.append(sigma_1)
-            #print(f'{sigma_0}, {sigma_1}')
+            sigma_1 = sum([sigma_f(i) for i in range(M)])
+            GKD += [sigma_1]
+            
+            #Entropie berekenen en in lijst plaatsen
+            p = np.array([p_f(i) for i in range(M)])
+            entropie = np.sum(-p*np.log2(p))
+            ent_list.append(entropie)
 
-            #p en entropie
-            p = np.zeros(M)
-            for i in range(M):
-                p_i = p_f(i)
-                p[i] = p_i if p_i > 0 else 1
-            ent.append(np.sum(np.log2(p) * (-p)))
+            #Delta herberekenen
+            delta = (sigma_0 - sigma_1)/sigma_0
 
+            #Iterator verhogen 
+            it += 1
+        
+        #GKD_min return waarde
         GKD_min = sigma_1
-        entropie = ent[-1]
+        GKD = np.array(GKD)
+
+        # p
+        p_functie = lambda i: integrate.quad(lambda u: f_u(u), r[i], r[i+1])[0]
+        p = [p_functie(i) for i in range(0, M)] 
 
         #SQR
-        mean = integrate.quad(lambda u: u*f_u(u), -np.Inf, np.Inf)[0]
-        SQR_0 = (integrate.quad(lambda u: (u**2) * f_u(u), -np.Inf, np.Inf)[0] - mean**2)/GKD_min
-        SQR = 10 * np.log10(SQR_0)
+        mean_f_u = integrate.quad(lambda u: f_u(u)*u, -1, 1)[0]
+        var_f_u = integrate.quad(lambda u: (f_u(u) - mean_f_u)**2, -1, 1)[0]
+        SQR = 10*np.log10(var_f_u / GKD_min)
 
-        #plots
-        if(plot):
-            plt.plot(gkd)
+        if plot:
+            #GKD ifv iteraties
+            plt.plot(np.linspace(1, it, it), GKD)
+            plt.axhline(3.95e-05, color='r')
+            plt.xlabel("Iteraties")
             plt.ylabel("GKD")
-            plt.xlabel("Iteraties")
-            plt.savefig("lm_gkd.png")
+            plt.legend(["Lloyd-Max", "Uniform (M = 64)"])
+            plt.grid(True)
+            plt.savefig("gkd_lm.png")
             plt.close()
 
-            plt.plot(ent)
+            #Entropie ifv iteraties
+            plt.plot(np.linspace(1, it, it), ent_list)
+            plt.axhline(5.12, color='r')
+            plt.xlabel("Iteraties")
             plt.ylabel("Entropie")
-            plt.xlabel("Iteraties")
-            plt.savefig("lm_entropie.png")
+            plt.legend(["Lloyd-Max", "Uniform (M = 64)"])
+            plt.grid(True)
+            plt.savefig("ent_lm.png")
             plt.close()
 
-
+            #Dist
+            x = np.linspace(-1, 1, 2000)
+            plt.plot(x, [f_u(i) for i in x])
+            plt.plot(q, np.zeros(M), marker = '|')
+            for line in r:
+                plt.axvline(x=line, color='g', linewidth=0.5, marker = 'x')
+            plt.xlabel("u")
+            plt.ylabel("f_u(u)")
+            plt.grid(True)
+            plt.savefig("dist_lm.png")
+            plt.close()
+               
         # GKD_min : minimale GKD van de Lloyd-Max kwantisator
         # SQR : SQR van de Lloyd-Max kwantisator
         # entropie : entropie van het gekwantiseerde signaal

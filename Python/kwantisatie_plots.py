@@ -1,3 +1,6 @@
+from kwantisatie import Kwantisatie
+from matplotlib import pyplot as plt
+
 def run_kwantisatie():
     obj = Kwantisatie(0)
     
@@ -79,7 +82,6 @@ def run_kwantisatie():
     q_opt = opt_kwant[4]
     gekwantiseerd_opt = obj.kwantiseer(r_opt, q_opt)
 
-    """
     print('Generating plot: fU(u)')
     plt.figure(figsize=(20,10))
     for i in range(0, 2**6):
@@ -88,9 +90,9 @@ def run_kwantisatie():
     plt.axvline(r_opt[2**6], 0, 0.2, color = 'r', lw = 0.5)
     plt.xlabel("Monsterwaarde u")
     plt.ylabel("dichtheid")
-    obj.plot_distributie('fu_opt.png')
+    obj.plot_distributie('fu_lm.png')
     print('Done!')
-    """
+
 
     ###########################
 
@@ -100,3 +102,6 @@ def run_kwantisatie():
     #obj.save_and_play_music(np.array(obj.kwantiseer(r_opt, q_opt)), "LM.wav", 0)
     
     return (r_opt,q_opt,gekwantiseerd_opt)
+
+
+run_kwantisatie()

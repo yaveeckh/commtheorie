@@ -93,8 +93,7 @@ def run_broncodering():
     return M/len(bronsymbolen_vast), GKA
 
 def run_kanaalcodering(bitlist):
-    T = 0
-    T_max = 5      
+        
     M = 0
     g_x = [1,1,0,0,1,1,0,1,1]
     
@@ -124,12 +123,13 @@ def run_kanaalcodering(bitlist):
 
     #Kopieer decoded voor een gecorrigeerde array
     decoded_corrected = copy.deepcopy(decoded[0])
-    #print(len(decoded_fouten))
+
+    T = 0
+    T_max = 5  
     if(decoded_fouten != []):
         
         while(T < T_max and len(decoded_fouten) > 0):
-            print(f'---Retransmissie {T}---')
-            
+
             #Retransmit
             retrans_pack = np.array([encoded[i] for i in decoded_fouten])
             
@@ -138,27 +138,21 @@ def run_kanaalcodering(bitlist):
             retransmitted = np.reshape(r_moddet, (len(r_moddet)//14, 14))
 
             #Decode
-            d = obj.kanaaldecodering_2(retransmitted, g_x)
-            decoded_retransmitted = d[0]
-            fouten_retransmitted = d[1]
+            r_decoded = obj.kanaaldecodering_2(retransmitted, g_x)
+            r_bits = r_decoded[0]
+            r_fouten = r_decoded[1]
 
-            nieuwe_fouten = [decoded_fouten[i] for i in fouten_retransmitted]
+            nieuwe_fouten = [decoded_fouten[i] for i in r_fouten]
 
-            if T < T_max:
-                to_remove = []
-                for index, row in enumerate(decoded_fouten):
-                    if row not in nieuwe_fouten:
-                        decoded_corrected[row] = decoded_retransmitted[index]
-                        to_remove.append(row)
-                
-                for i in to_remove: decoded_fouten.remove(i)
-                
-                T += 1
-    # print(bitlist_grouped)
-    # print(encoded)
-    # print(encoded_ch)
-    # print(decoded_corrected)
-
+            to_remove = []
+            for index, row in enumerate(decoded_fouten):
+                if row not in nieuwe_fouten:
+                    decoded_corrected[row] = r_bits[index]
+                    to_remove.append(row)
+            
+            for i in to_remove: decoded_fouten.remove(i)
+            
+            T += 1
     return (decoded_corrected.flatten(), M)
 
 
@@ -182,8 +176,4 @@ def run_moddet(bitlist):
     return bitarray_out
 
 warnings.simplefilter('ignore') # ignore warnings of integral
-
-
-# rand = np.random.randint(0,2, 100000)
-# run_kanaalcodering(rand)
 print(run_broncodering())
