@@ -1,7 +1,4 @@
 from numpy.lib.index_tricks import IndexExpression, MGridClass
-from kwantisatie import Kwantisatie
-from broncodering import Broncodering
-from kanaalcodering import Kanaalcodering
 from moddet import ModDet
 import numpy as np
 import matplotlib.pyplot as plt
@@ -312,6 +309,65 @@ def plot_phi_BER(constellatie):
     plt.close()
     return
 
+######### DEMOD  #########
+def plot_demod():
+    alpha = 0.5
+    constellatie = 'BPSK'
+    bitstring = bin(random.randint(0,2**100))[2:].zfill(100)
+    bitvector_in = []
+    for bit in bitstring:
+        bitvector_in.append(int(bit))
+    
+    a = obj.mapper(bitvector_in, constellatie)
+    s = obj.moduleer(a, T, Ns, f0, alpha, Lf)
+    r = obj.kanaal(s, 0, hch)
+    rdemod = obj.demoduleer(r, T, Ns, f0, alpha, Lf, theta)
+
+    rdemod_overgang1 = rdemod[:2*Lf*Ns]
+    rdemod_overgang2 = rdemod[-2*Lf*Ns:]
+    time1 = np.arange(0, len(rdemod[:2*Lf*Ns]), 1)*T/Ns
+    time2 = np.arange(0, len(rdemod[-2*Lf*Ns:]), 1)*T/Ns + 12*Lf*T
+    plt.plot(time1, abs(rdemod_overgang1), color = 'r')
+    plt.plot(time2, abs(rdemod_overgang2), color = 'r', label = 'overgangsverschijnsel')
+    rdemod_af = rdemod[2*Lf*Ns:-2*Lf*Ns + 1] 
+    time_af = np.arange(0,len(rdemod_af),1)*T/Ns + 2*Lf*T
+    plt.plot(time_af,abs(rdemod_af), color = 'b')
+    plt.xlabel('tijd [s]')
+    plt.ylabel('|rdemod(t)|')
+    plt.legend()
+    plt.savefig('moddet/decimatie/demod.png')
+    plt.close()
+
+
+    return
+
+
+######### OOGDIAGRAM  #########
+def plot_all_eyediagrams():
+    def plot_eye(constellatie, alpha):
+        bitstring = bin(random.randint(0,2**100))[2:].zfill(100)
+        bitvector_in = []
+        for bit in bitstring:
+            bitvector_in.append(int(bit))
+        
+        a = obj.mapper(bitvector_in, constellatie)
+        s = obj.moduleer(a, T, Ns, f0, alpha, Lf)
+        r = obj.kanaal(s, 0, hch)
+        rdemod = obj.demoduleer(r, T, Ns, f0, alpha, Lf, theta)
+        
+        r_oog = rdemod[2*Lf*Ns:-2*Lf*Ns + 1].real
+        t = np.arange(0,len(r_oog),1)*T/Ns + 2*Lf*T
+        plt.plot(t, r_oog)
+        plt.show()
+        plt.close()
+    
+        return
+
+    plot_eye('BPSK', 0.5)
+    return
+
+
+
 # plot_BER_037()
 # plot_BER_alle3()
 # plot_scatter_4QAM(0.000, 'moddet/scatter/4QAM_000.png')
@@ -325,4 +381,7 @@ def plot_phi_BER(constellatie):
 # plot_phi_BER('4QAM')
 # plot_epsilon_BER('BPSK')
 # plot_epsilon_BER('4PAM')
+
+# plot_demod()
+plot_all_eyediagrams()
 

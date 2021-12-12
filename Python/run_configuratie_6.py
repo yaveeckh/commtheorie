@@ -17,7 +17,7 @@ from playsound import playsound
 
 def run_kwantisatie():
     obj = Kwantisatie(0)
-    
+
     opt_kwant = obj.bepaal_Lloyd_Max_kwantisator(2**6)
     r_opt = opt_kwant[3]
     q_opt = opt_kwant[4]
@@ -36,39 +36,27 @@ def run_broncodering():
     r = r.tolist()
     q = q.tolist()
 
-
-    print('rel_freq')
+    print('Bron -> Macro')
     alfabet_scalair = q
-    rel_freq = [0 for _ in range(len(alfabet_scalair))]
-    aantal_symbolen = 0
-    while len(bronsymbolen) > 1:
-        aantal_symbolen += 1
-        index = alfabet_scalair.index(bronsymbolen[0])
-        rel_freq[index] += 1
-        del bronsymbolen[0]
-
-    for index, element in enumerate(rel_freq):
-        rel_freq[index] = element / aantal_symbolen
-
+    macrosymbolen, alfabet_vector, rel_freq = obj.scalair_naar_vector(bronsymbolen, alfabet_scalair)
     entropie = 0.0
     for kans in rel_freq:
         if kans != 0.0:
             entropie -= kans*np.log2(kans)
-    print('entropie = ', entropie, '\n')
+    print('entropie = ', entropie)
     
 
     print('Codetabel + dictionary')
-    index_lijst = [i + 1 for i in range(len(alfabet_scalair))]
+    index_lijst = [i + 1 for i in range(len(alfabet_vector))]
     dictionary, gem_len, codetabel = obj.maak_codetabel_Huffman(rel_freq, index_lijst)
     print('gem_len = ', gem_len, '\n')
 
-    macrosymbolen = [alfabet_scalair.index(sym) + 1 for sym in bronsymbolen_vast]
+
     print('Huffman_encodeer\n')
     data_binair = obj.Huffman_encodeer(np.array(macrosymbolen), dictionary)
     data_binair_str = ''
     for datapoint in data_binair:
         data_binair_str += str(datapoint)
-    
     
     data_binair_lijst = []
     for bit in data_binair_str:
@@ -76,12 +64,14 @@ def run_broncodering():
     
     bitlist_kanaal, M = run_kanaalcodering(data_binair_lijst)
 
+
     print('Binair -> macro')
     data_macro = obj.Huffman_decodeer(bitlist_kanaal , np.array(codetabel), np.array(index_lijst))
 
     print('Macro -> Bron')
-    data_decoded = [alfabet_scalair[sym - 1] for sym in data_macro]
-    obj_2.save_and_play_music(np.array(data_decoded), "Configuratie_5.wav", 0)
+    data_decoded = obj.vector_naar_scalair(data_macro, alfabet_scalair)
+    obj_2.save_and_play_music(np.array(data_decoded), "Configuratie_6.wav", 0)
+
 
     GKA = 0
     for i in range(len(data_decoded)):
@@ -91,7 +81,8 @@ def run_broncodering():
     return M/len(bronsymbolen_vast), GKA
 
 def run_kanaalcodering(bitlist):
-        
+    T = 0
+    T_max = 5      
     M = 0
     g_x = [1,1,0,0,1,1,0,1,1]
     
@@ -120,13 +111,11 @@ def run_kanaalcodering(bitlist):
 
     #Kopieer decoded voor een gecorrigeerde array
     decoded_corrected = copy.deepcopy(decoded[0])
-
-    T = 0
-    T_max = 5  
     if(decoded_fouten != []):
         
         while(T < T_max and len(decoded_fouten) > 0):
-
+            print(f'---Retransmissie {T}---')
+            
             #Retransmit
             retrans_pack = np.array([encoded[i] for i in decoded_fouten])
             
@@ -135,21 +124,23 @@ def run_kanaalcodering(bitlist):
             retransmitted = np.reshape(r_moddet, (len(r_moddet)//14, 14))
 
             #Decode
-            r_decoded = obj.kanaaldecodering_2(retransmitted, g_x)
-            r_bits = r_decoded[0]
-            r_fouten = r_decoded[1]
+            d = obj.kanaaldecodering_2(retransmitted, g_x)
+            decoded_retransmitted = d[0]
+            fouten_retransmitted = d[1]
 
-            nieuwe_fouten = [decoded_fouten[i] for i in r_fouten]
+            nieuwe_fouten = [decoded_fouten[i] for i in fouten_retransmitted]
 
-            to_remove = []
-            for index, row in enumerate(decoded_fouten):
-                if row not in nieuwe_fouten:
-                    decoded_corrected[row] = r_bits[index]
-                    to_remove.append(row)
-            
-            for i in to_remove: decoded_fouten.remove(i)
-            
-            T += 1
+            if T < T_max:
+                to_remove = []
+                for index, row in enumerate(decoded_fouten):
+                    if row not in nieuwe_fouten:
+                        decoded_corrected[row] = decoded_retransmitted[index]
+                        to_remove.append(row)
+                
+                for i in to_remove: decoded_fouten.remove(i)
+                
+                T += 1
+
     return (decoded_corrected.flatten(), M)
 
 
@@ -173,4 +164,5 @@ def run_moddet(bitlist):
     return bitarray_out
 
 warnings.simplefilter('ignore') # ignore warnings of integral
+
 print(run_broncodering())
