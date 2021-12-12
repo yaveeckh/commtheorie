@@ -199,4 +199,42 @@ class Kanaalcodering():
             if bool_fout:
                 fouten.append(i)
         
+<<<<<<< HEAD
         return np.array(crc_decoded), fouten
+=======
+        return np.array(crc_decoded), fouten
+
+
+    
+        
+# print("----Test 1: Inwendig a---") 
+# g_x = [1,1,0,1,0,1]
+# a = Kanaalcodering.encodeer_inwendig([1,1,0,1,1],g_x)
+# print(a)
+# print(Kanaalcodering.decodeer_inwendig(a, g_x))
+
+# print("----Test 2: Inwendig b---")
+# g_x = [1,1,0,0,1,1,0,1,1]
+# a = Kanaalcodering.encodeer_inwendig([1,1,0,1,1],g_x)
+# print(a)
+# print(Kanaalcodering.decodeer_inwendig(a, [1,1,0,1,0,1]))
+
+# print("---Test 3: Blokcode ---")
+# a = Kanaalcodering.encodeer_uitwendig([1,0,0,0,1,1,0,1,1,0])
+# print(a)
+# b = Kanaalcodering.decodeer_uitwendig(a)
+# print(b)
+
+#obj = Kanaalcodering()
+# data_binair =  ['11', '10', '01', '00', '10', '01', '01', '00', '00', '00']
+# a =  obj.kanaalencodering_1(data_binair)
+# print(a)
+
+# b = obj.kanaaldecodering_1(a)
+# print(b)
+
+
+
+#c = obj.plot_s_1()
+#c = obj.plot_s_2()
+>>>>>>> 9351b71f5e74536feabd9a721c908f916de0373f
