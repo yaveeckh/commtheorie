@@ -92,13 +92,13 @@ def run_broncodering():
     return M/len(bronsymbolen_vast), GKA
 
 def run_kanaalcodering(bitlist): 
-    obj = Kanaalcodering()
+    obj = Kanaalcodering() 
     bitlist_2 = bitlist[:-(len(bitlist)%10)]
     bitlist_grouped = np.reshape(bitlist_2, (len(bitlist_2)//10, 10))
     
     print("Kanaal codering")
     bits_encoded = obj.kanaalencodering_1(bitlist_grouped)
-
+    
     bitlist_moddet = run_moddet(bits_encoded.flatten())
 
     bitlist_moddet_grouped = np.reshape(bitlist_moddet, (len(bitlist_moddet)//14, 14))
@@ -106,7 +106,7 @@ def run_kanaalcodering(bitlist):
     print("kanaal decodering")
     bits_decoded = obj.kanaaldecodering_1(bitlist_moddet_grouped)[0]
 
-    return (bits_decoded.flatten().tolist(), len(bits_encoded.flatten()))
+    return (bits_decoded.flatten(), len(bits_encoded.flatten()))
 
 
 def run_moddet(bitlist):
@@ -132,4 +132,3 @@ warnings.simplefilter('ignore') # ignore warnings of integral
 
 
 print(run_broncodering())
-
