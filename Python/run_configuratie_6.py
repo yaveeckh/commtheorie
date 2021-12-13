@@ -88,8 +88,9 @@ def run_kanaalcodering(bitlist):
     
     print("Kanaalcodering")
 
+    bitlist_2 = bitlist[:-(len(bitlist)%2)]
     obj = Kanaalcodering()
-    bitlist_grouped = np.reshape(bitlist, (len(bitlist)//2, 2))
+    bitlist_grouped = np.reshape(bitlist_2, (len(bitlist_2)//2, 2))
     print("encoding")
     encoded = obj.kanaalencodering_2(bitlist_grouped, g_x)
 
