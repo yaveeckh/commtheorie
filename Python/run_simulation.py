@@ -23,14 +23,10 @@ def run_kwantisatie():
     alpha = np.array([i for i in range(2,9)])
     y = np.array([obj.bepaal_optimale_lineaire_kwantisator(2**i)[2] for i in range(2,9)])
     y2 = np.array([obj.bepaal_compansie_kwantisator(2**i)[1] for i in range(2,9)])
-    y3 = np.array([obj.bepaal_Lloyd_Max_kwantisator(2**i)[1] for i in range(2,7)])
-    winst = [0 for _ in range(0,6)] 
-    for i in range(0,6):
-        winst[i] = y[i+1] - y[i]
-    print(winst)
+    y3 = np.array([obj.bepaal_Lloyd_Max_kwantisator(2**i)[1] for i in range(2,9)])
     plt.plot(alpha, y, label="Lineaire kwantisator")
     plt.plot(alpha, y2, label="Compansie kwantisator")
-    plt.plot(alpha[:5], y3, label="Lloyd-Max kwantisator")
+    plt.plot(alpha, y3, label="Lloyd-Max kwantisator")
     plt.xlabel("Alpha")
     plt.ylabel("SQR [dB]")
     plt.legend(loc="upper left")

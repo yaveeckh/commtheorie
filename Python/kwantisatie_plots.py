@@ -21,11 +21,12 @@ def run_kwantisatie():
     for i in range(0,6):
         winst[i] = y[i+1] - y[i]
     print(winst)
-    plt.plot(alpha, y)
-    plt.plot(alpha, y2)
-    plt.plot(alpha[:5], y3)
+    plt.plot(alpha, y, label="Lineaire kwantisator")
+    plt.plot(alpha, y2, label="Compansie kwantisator")
+    plt.plot(alpha[:5], y3, label="Lloyd-Max kwantisator")
     plt.xlabel("Alpha")
     plt.ylabel("SQR [dB]")
+    plt.legend(loc="upper left")
     plt.savefig('SQR.png')
     plt.close()
     print('Done!')
