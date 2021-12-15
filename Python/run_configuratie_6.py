@@ -81,19 +81,18 @@ def run_broncodering():
     return M/len(bronsymbolen_vast), GKA
 
 def run_kanaalcodering(bitlist):
-    T = 0
-    T_max = 5      
+        
     M = 0
     g_x = [1,1,0,0,1,1,0,1,1]
-    
-    print("Kanaalcodering")
+    bitlist = np.array(bitlist, np.uint8)
 
-    bitlist_2 = bitlist[:-(len(bitlist)%2)]
+    if(len(bitlist) %2 != 0):
+        bitlist = bitlist[:-(len(bitlist)%2)]
+
     obj = Kanaalcodering()
-    bitlist_grouped = np.reshape(bitlist_2, (len(bitlist_2)//2, 2))
+    bitlist = np.reshape(bitlist, (len(bitlist)//2, 2))
     print("encoding")
-    encoded = obj.kanaalencodering_2(bitlist_grouped, g_x)
-
+    encoded = obj.kanaalencodering_2(bitlist, g_x)
     
     print("kanaal")
     #Simuleer kanaal door bits te veranderen
@@ -106,17 +105,17 @@ def run_kanaalcodering(bitlist):
     print("decoding")
     #Decodeer wat door het kanaal komt
     decoded = obj.kanaaldecodering_2(encoded_ch, g_x)
-    decoded_bits = decoded[0]
     decoded_fouten = decoded[1]
 
-
     #Kopieer decoded voor een gecorrigeerde array
-    decoded_corrected = copy.deepcopy(decoded[0])
+    decoded_corrected = np.array(copy.deepcopy(decoded[0]), np.uint8)   
+
+    T = 0
+    T_max = 5  
     if(decoded_fouten != []):
         
         while(T < T_max and len(decoded_fouten) > 0):
-            print(f'---Retransmissie {T}---')
-            
+
             #Retransmit
             retrans_pack = np.array([encoded[i] for i in decoded_fouten])
             
@@ -140,7 +139,6 @@ def run_kanaalcodering(bitlist):
             for i in to_remove: decoded_fouten.remove(i)
             
             T += 1
-
     return (decoded_corrected.flatten(), M)
 
 
@@ -164,5 +162,4 @@ def run_moddet(bitlist):
     return bitarray_out
 
 warnings.simplefilter('ignore') # ignore warnings of integral
-
 print(run_broncodering())

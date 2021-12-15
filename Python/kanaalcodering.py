@@ -4,12 +4,15 @@ from numpy.lib.function_base import kaiser
 from numpy.ma.core import bitwise_xor
 import numpy.matlib
 import math
+from numpy.random.mtrand import rand
 from numpy.typing import _128Bit
 from scipy import signal
 from matplotlib import pyplot as plt
 import matplotlib as mplt
 import copy
 import sys
+import itertools
+
 np.set_printoptions(threshold=sys.maxsize)
 
 class Kanaalcodering():
@@ -179,23 +182,46 @@ class Kanaalcodering():
 
 
     def kanaalencodering_2(self, bit_vec, g_x):
-        crc = np.array([self.encodeer_inwendig(group, g_x) for group in bit_vec])
-        blk = np.array([self.encodeer_uitwendig(group) for group in crc])
+        enc_dict = {}
+        crc = []
+        for group in bit_vec:
+            dec = self.binarray_to_dec(group)
+            if dec in enc_dict.keys():
+                crc.append(enc_dict[dec])
+            else:
+                encoded_crc = self.encodeer_inwendig(group, g_x)
+                enc_dict[dec] = encoded_crc
+                crc.append(encoded_crc)    
+        crc = np.array(crc)
+        blk = np.array([self.encodeer_uitwendig(group) for group in crc], np.uint8)
         return blk
     
     def kanaaldecodering_2(self, bit_vec, g_x):
         fouten = []
         blk_decoded = []
         crc_decoded = []
+        
         for i in range(len(bit_vec)):
             blk_decoded += [list(self.decodeer_uitwendig(bit_vec[i], True)[0])]
         
+        dec_dict = {}
+        #Genereer alle codewoorden en encrypties, maak code dictionary
+        k = 10 - len(g_x) + 1
+        all_m = [list(bits) for bits in itertools.product([0, 1], repeat=k)]
+        for woord in all_m:
+            woord_enc = self.encodeer_inwendig(woord, g_x)
+            dec = int(self.binarray_to_dec(woord_enc),2)
+            dec_dict[dec] = woord
         for i in range(len(blk_decoded)):
-            decoded_inwendig = self.decodeer_inwendig(blk_decoded[i],g_x)
-            crc_decoded += [decoded_inwendig[0]]
+            woord = blk_decoded[i]
+            dec = int(self.binarray_to_dec(woord), 2)
             
-            bool_fout = decoded_inwendig[1]
-
-            if bool_fout:
+            if dec not in dec_dict.keys():
                 fouten.append(i)
-        return np.array(crc_decoded), fouten
+            
+            crc_decoded.append(woord[:k])
+        return np.array(crc_decoded, np.uint8), fouten
+
+    def binarray_to_dec(self, x):
+        integer_array = list(map(int, x))
+        return "".join(list(map(str, integer_array)))

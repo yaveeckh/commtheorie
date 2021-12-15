@@ -73,6 +73,8 @@ def run_broncodering():
     data_binair_lijst = []
     for bit in data_binair_str:
         data_binair_lijst.append(int(bit))
+
+    data_binair_lijst = np.array(data_binair_lijst, np.uint8)
     
     bitlist_kanaal, M = run_kanaalcodering(data_binair_lijst)
 
@@ -94,15 +96,15 @@ def run_kanaalcodering(bitlist):
         
     M = 0
     g_x = [1,1,0,0,1,1,0,1,1]
-    
-    print("Kanaalcodering")
+    bitlist = np.array(bitlist, np.uint8)
 
-    bitlist_2 = bitlist[:-(len(bitlist)%2)]
+    if(len(bitlist) %2 != 0):
+        bitlist = bitlist[:-(len(bitlist)%2)]
+
     obj = Kanaalcodering()
-    bitlist_grouped = np.reshape(bitlist_2, (len(bitlist_2)//2, 2))
+    bitlist = np.reshape(bitlist, (len(bitlist)//2, 2))
     print("encoding")
-    encoded = obj.kanaalencodering_2(bitlist_grouped, g_x)
-
+    encoded = obj.kanaalencodering_2(bitlist, g_x)
     
     print("kanaal")
     #Simuleer kanaal door bits te veranderen
@@ -115,12 +117,10 @@ def run_kanaalcodering(bitlist):
     print("decoding")
     #Decodeer wat door het kanaal komt
     decoded = obj.kanaaldecodering_2(encoded_ch, g_x)
-    decoded_bits = decoded[0]
     decoded_fouten = decoded[1]
 
-
     #Kopieer decoded voor een gecorrigeerde array
-    decoded_corrected = copy.deepcopy(decoded[0])
+    decoded_corrected = np.array(copy.deepcopy(decoded[0]), np.uint8)   
 
     T = 0
     T_max = 5  
@@ -169,9 +169,9 @@ def run_moddet(bitlist):
     hch = 1
     theta = math.pi / 16
 
-    bitarray_out = obj.modulation_detection(bitlist, constellatie, T, Ns, f0, alpha, Lf, N0, hch, theta)
+    bitarray_out = np.array(obj.modulation_detection(bitlist, constellatie, T, Ns, f0, alpha, Lf, N0, hch, theta), np.uint8)
 
     return bitarray_out
 
 warnings.simplefilter('ignore') # ignore warnings of integral
-print(run_broncodering())
+run_kanaalcodering(np.ran)
