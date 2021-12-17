@@ -91,7 +91,7 @@ def run_kwantisatie():
     plt.axvline(r_opt[2**6], 0, 0.2, color = 'r', lw = 0.5)
     plt.xlabel("Monsterwaarde u")
     plt.ylabel("dichtheid")
-    obj.plot_distributie('fu_lm.png')
+    obj.plot_distributie()
     print('Done!')
 
 

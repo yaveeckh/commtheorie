@@ -343,18 +343,6 @@ class Kwantisatie():
             plt.savefig("ent_lm.png")
             plt.close()
 
-            #Dist
-            x = np.linspace(-1, 1, 2000)
-            plt.plot(x, [f_u(i) for i in x])
-            plt.plot(q, np.zeros(M), marker = '|')
-            for line in r:
-                plt.axvline(x=line, color='g', linewidth=0.5, marker = 'x')
-            plt.xlabel("u")
-            plt.ylabel("f_u(u)")
-            plt.grid(True)
-            plt.savefig("dist_lm.png")
-            plt.close()
-               
         # GKD_min : minimale GKD van de Lloyd-Max kwantisator
         # SQR : SQR van de Lloyd-Max kwantisator
         # entropie : entropie van het gekwantiseerde signaal

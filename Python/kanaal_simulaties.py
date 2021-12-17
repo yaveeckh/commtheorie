@@ -155,13 +155,20 @@ def plot_protocol1():
      0.350071414568572, 0.3517782389981356, 0.35278595065230123, 0.35082795397137245,
      0.3507762678808203, 0.352803375622698, 0.34719570032844715, 0.34778737670937493]
     
+    pm = 0.0023
+    pf = 0.6261
+    p_ana = [pm * (1-pf**(T+1))/(1-pf) + pf**(T+1) for T in x]
+    print(p_ana) 
+    
     plt.plot(x, pe)
+    plt.plot(x, p_ana)
     plt.xlabel("T_max")
     plt.ylabel("p_e")
     plt.yscale("log")
     plt.hlines(0.001, 0, 15, color="r")
     plt.grid(True)
-    plt.savefig("kc_plots/p_e_protocol1.png")
+    plt.legend(["p_e experimenteel", "p_e analytisch"])
+    plt.savefig("p_e_protocol1.png")
     plt.close()
 
     plt.plot(x, deb)
@@ -169,7 +176,7 @@ def plot_protocol1():
     plt.xlabel("T_max")
     plt.ylabel("Gemiddeld informatiedebiet")
     plt.grid(True)
-    plt.savefig("kc_plots/deb_protocol1.png")
+    plt.savefig("deb_protocol1.png")
     plt.close()
     return
 
@@ -368,5 +375,4 @@ def plot_protocol2b():
     plt.savefig("kc_plots/deb_protocol2b.png")
     plt.close()
     return
-
-print(run_simulation2b())
+plot_protocol1()
