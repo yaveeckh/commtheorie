@@ -174,4 +174,6 @@ def run_moddet(bitlist):
     return bitarray_out
 
 warnings.simplefilter('ignore') # ignore warnings of integral
-run_kanaalcodering(np.ran)
+#run_kanaalcodering(np.ran)
+
+print(run_broncodering())
